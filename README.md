@@ -33,7 +33,7 @@ python3 -m unittest -v
 
 做多訊號的出場週期固定為十個交易日。`python3 long_entry_backtest.py market_history.csv` 會以訊號後一交易日收盤作進場代理、第十個交易日收盤出場，並輸出 `long_entry_backtest_report.json`；主要統計採持有期間不重複進場的交易，以免連續訊號灌高樣本數。也可用 `--holding-days` 測試其他持有期。做空監控維持三個交易日。
 
-做多與做空已拆成獨立頁面：`/dashboard/entry.html` 與 `/dashboard/short.html`。做空監控條件為總風險至少40分、指數跌破季線、季線斜率為負、三大法人合計賣超。由於現有750日資料中的三日做空條件未通過後30%樣本外驗證，即使全部成立也只顯示「做空觀察」，不宣稱為已驗證的進場訊號。正式啟用前需補入更多空頭循環資料並納入融券或反向ETF成本。
+做多與做空已拆成獨立頁面：`/dashboard/entry.html` 與 `/dashboard/short.html`。做空監控條件為總風險至少40分、指數跌破季線、季線斜率為負、三大法人合計賣超。1,500日資料中四條件全期三日做空勝率50.81%，尚不足以宣稱為已驗證的進場訊號；介面只顯示「做空觀察」。正式啟用前仍需納入融券或反向ETF成本。
 
 ### 環境變數
 
@@ -71,6 +71,6 @@ python3 -m unittest -v
 
 `backtest.py` 採 expanding-window walk-forward：每個評分日只使用當時及以前資料，計算未來 5／20 個交易日最大回撤，並依現行四段風險區間輸出樣本數、平均／中位數／90 百分位回撤與 Spearman 排序相關。結果寫入 `backtest_daily.csv` 和 `backtest_report.json`。至少累積兩年／500 個交易日且涵蓋多空循環後，才適合依報告校準門檻。
 
-完整歷史校準可先執行 `python3 twse_scraper.py --months 40 --limit 750 --output market_history.csv`，再以 `python3 backfill_structure.py market_history.csv` 回補每日維持率及融資集中結構，最後執行 `python3 backtest.py market_history.csv`。兩個抓取程序都會寫入檢查點，可在中斷後用相同命令續抓。
+完整歷史校準可先執行 `python3 twse_scraper.py --months 80 --limit 1500 --output market_history.csv`，再以 `python3 backfill_structure.py market_history.csv` 回補每日維持率及融資集中結構，最後執行 `python3 backtest.py market_history.csv`。兩個抓取程序都會寫入檢查點，可在中斷後用相同命令續抓。
 
-目前 750 個交易日的第一輪結果已完成。風險分數制的候選分界為 23.6／27.9／37.5，但尚未取代介面的 40／60／80 分界；原因是資料只涵蓋約三年，而且加入維持率與結構後的樣本外結果沒有改善。待累積另一段市場循環後，應用完全未參與調參的新資料再次驗證，再決定是否升級為正式門檻。
+目前1,500個交易日的延長回測已完成，期間為2020-05-21至2026-07-21。完整模型的候選分界為21.4／26.7／41.6，但尚未取代介面的40／60／80分界；需以之後完全未參與調參的新資料再次驗證，再決定是否升級為正式門檻。

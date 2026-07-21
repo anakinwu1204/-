@@ -1,36 +1,36 @@
 {
-  "data_start": "2023-06-16",
+  "data_start": "2020-05-21",
   "data_end": "2026-07-21",
-  "trading_days": 750,
-  "calendar_days": 1131,
+  "trading_days": 1500,
+  "calendar_days": 2252,
   "method": "expanding-window；每期僅使用當時及以前資料",
   "interpretation": "分數愈高應對應愈大回撤，因此 Spearman 係數預期為正",
   "warnings": [],
   "results": {
     "5d": {
-      "samples": 626,
-      "spearman_score_vs_mdd": 0.1988,
+      "samples": 1376,
+      "spearman_score_vs_mdd": 0.1901,
       "buckets": [
         {
           "bucket": "0–39.9 低風險",
-          "samples": 550,
-          "avg_mdd_pct": 1.852,
-          "median_mdd_pct": 1.282,
-          "p90_mdd_pct": 4.11
+          "samples": 1143,
+          "avg_mdd_pct": 1.7,
+          "median_mdd_pct": 1.27,
+          "p90_mdd_pct": 3.586
         },
         {
           "bucket": "40–59.9 中低風險",
-          "samples": 72,
-          "avg_mdd_pct": 2.61,
-          "median_mdd_pct": 1.838,
-          "p90_mdd_pct": 5.351
+          "samples": 227,
+          "avg_mdd_pct": 2.252,
+          "median_mdd_pct": 1.727,
+          "p90_mdd_pct": 4.642
         },
         {
           "bucket": "60–79.9 中高風險",
-          "samples": 4,
-          "avg_mdd_pct": 7.022,
-          "median_mdd_pct": 3.892,
-          "p90_mdd_pct": 14.575
+          "samples": 6,
+          "avg_mdd_pct": 5.387,
+          "median_mdd_pct": 2.125,
+          "p90_mdd_pct": 12.064
         },
         {
           "bucket": "80–100 高風險",
@@ -42,29 +42,29 @@
       ]
     },
     "20d": {
-      "samples": 611,
-      "spearman_score_vs_mdd": 0.2514,
+      "samples": 1361,
+      "spearman_score_vs_mdd": 0.1705,
       "buckets": [
         {
           "bucket": "0–39.9 低風險",
-          "samples": 538,
-          "avg_mdd_pct": 4.71,
-          "median_mdd_pct": 3.501,
-          "p90_mdd_pct": 7.902
+          "samples": 1131,
+          "avg_mdd_pct": 4.391,
+          "median_mdd_pct": 3.531,
+          "p90_mdd_pct": 7.901
         },
         {
           "bucket": "40–59.9 中低風險",
-          "samples": 69,
-          "avg_mdd_pct": 6.891,
-          "median_mdd_pct": 4.562,
-          "p90_mdd_pct": 21.001
+          "samples": 224,
+          "avg_mdd_pct": 5.58,
+          "median_mdd_pct": 3.681,
+          "p90_mdd_pct": 11.269
         },
         {
           "bucket": "60–79.9 中高風險",
-          "samples": 4,
-          "avg_mdd_pct": 7.871,
+          "samples": 6,
+          "avg_mdd_pct": 7.546,
           "median_mdd_pct": 5.573,
-          "p90_mdd_pct": 14.575
+          "p90_mdd_pct": 14.308
         },
         {
           "bucket": "80–100 高風險",
@@ -77,45 +77,45 @@
     }
   },
   "calibration_20d": {
-    "train_samples": 427,
-    "validation_samples": 184,
+    "train_samples": 952,
+    "validation_samples": 409,
     "suggested_thresholds": [
-      21.1,
-      27.6,
-      37.1
+      21.4,
+      26.7,
+      41.6
     ],
     "train_avg_mdd_pct": [
-      3.185,
-      4.259,
-      5.238,
-      7.738
+      3.38,
+      4.033,
+      4.6,
+      5.281
     ],
     "train_bucket_samples": [
-      85,
-      146,
-      110,
-      86
+      140,
+      237,
+      432,
+      143
     ],
     "validation_buckets_low_to_high_score": [
       {
-        "samples": 19,
-        "avg_mdd_pct": 4.346,
+        "samples": 59,
+        "avg_mdd_pct": 3.579,
+        "p90_mdd_pct": 6.788
+      },
+      {
+        "samples": 131,
+        "avg_mdd_pct": 4.124,
+        "p90_mdd_pct": 7.124
+      },
+      {
+        "samples": 184,
+        "avg_mdd_pct": 5.576,
         "p90_mdd_pct": 9.33
       },
       {
-        "samples": 78,
-        "avg_mdd_pct": 4.456,
-        "p90_mdd_pct": 8.15
-      },
-      {
-        "samples": 61,
-        "avg_mdd_pct": 5.613,
-        "p90_mdd_pct": 8.505
-      },
-      {
-        "samples": 26,
-        "avg_mdd_pct": 5.16,
-        "p90_mdd_pct": 7.644
+        "samples": 35,
+        "avg_mdd_pct": 8.945,
+        "p90_mdd_pct": 22.279
       }
     ]
   }
