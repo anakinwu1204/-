@@ -29,6 +29,8 @@ python3 -m unittest -v
 
 啟動儀表板後開啟 <http://127.0.0.1:8000>。預設讀取專案內的 `market.csv`；也可用 `python3 dashboard_server.py --csv 其他資料.csv --port 8080`。介面包含總分儀表、四項子分數、指數與均線、風險分數趨勢，以及最新三大法人買賣超。
 
+做多入場提醒頁位於 `/dashboard/entry.html`。它使用收盤後資料，依總風險分數、指數與季線位置、季線斜率及20日動能，判斷下一交易日為「適合分批做多／可考慮分批／接近條件／暫不適合」，並列出未通過條件。訊號門檻取自 `CALIBRATION.md` 的歷史檢查，只作風險管理參考。
+
 ### 環境變數
 
 部署環境可設定 `HOST`、`PORT`、`CSV_PATH`、`AUTO_REFRESH_MINUTES`、`TWSE_REFRESH_MONTHS`、`TWSE_REFRESH_LIMIT` 與 `TWSE_REQUEST_DELAY`。命令列參數優先於環境變數；設定範例見 `.env.example`。本機可執行 `set -a; source .env; set +a; python3 dashboard_server.py`。`.env` 已排除於版本控制，請勿把密鑰提交到 repository。TWSE 目前使用的公開資料端點不需要 API key。

@@ -1,41 +1,39 @@
 {
-  "data_start": "2025-12-17",
+  "data_start": "2023-06-16",
   "data_end": "2026-07-21",
-  "trading_days": 140,
-  "calendar_days": 216,
+  "trading_days": 750,
+  "calendar_days": 1131,
   "method": "expanding-window；每期僅使用當時及以前資料",
-  "interpretation": "分數愈高應對應愈小回撤，因此 Spearman 係數預期為負",
-  "warnings": [
-    "樣本未涵蓋至少兩年／500 個交易日，不宜據此正式校準門檻"
-  ],
+  "interpretation": "分數愈高應對應愈大回撤，因此 Spearman 係數預期為正",
+  "warnings": [],
   "results": {
     "5d": {
-      "samples": 16,
-      "spearman_score_vs_mdd": 0.0502,
+      "samples": 626,
+      "spearman_score_vs_mdd": 0.1988,
       "buckets": [
         {
-          "bucket": "0–39.9 高風險",
-          "samples": 0,
-          "avg_mdd_pct": null,
-          "median_mdd_pct": null,
-          "p90_mdd_pct": null
+          "bucket": "0–39.9 低風險",
+          "samples": 550,
+          "avg_mdd_pct": 1.852,
+          "median_mdd_pct": 1.282,
+          "p90_mdd_pct": 4.11
         },
         {
-          "bucket": "40–59.9 中高風險",
-          "samples": 5,
-          "avg_mdd_pct": 4.056,
-          "median_mdd_pct": 3.64,
-          "p90_mdd_pct": 5.546
+          "bucket": "40–59.9 中低風險",
+          "samples": 72,
+          "avg_mdd_pct": 2.61,
+          "median_mdd_pct": 1.838,
+          "p90_mdd_pct": 5.351
         },
         {
-          "bucket": "60–79.9 中低風險",
-          "samples": 11,
-          "avg_mdd_pct": 3.811,
-          "median_mdd_pct": 3.275,
-          "p90_mdd_pct": 6.973
+          "bucket": "60–79.9 中高風險",
+          "samples": 4,
+          "avg_mdd_pct": 7.022,
+          "median_mdd_pct": 3.892,
+          "p90_mdd_pct": 14.575
         },
         {
-          "bucket": "80–100 低風險",
+          "bucket": "80–100 高風險",
           "samples": 0,
           "avg_mdd_pct": null,
           "median_mdd_pct": null,
@@ -44,32 +42,32 @@
       ]
     },
     "20d": {
-      "samples": 1,
-      "spearman_score_vs_mdd": null,
+      "samples": 611,
+      "spearman_score_vs_mdd": 0.2514,
       "buckets": [
         {
-          "bucket": "0–39.9 高風險",
-          "samples": 0,
-          "avg_mdd_pct": null,
-          "median_mdd_pct": null,
-          "p90_mdd_pct": null
+          "bucket": "0–39.9 低風險",
+          "samples": 538,
+          "avg_mdd_pct": 4.71,
+          "median_mdd_pct": 3.501,
+          "p90_mdd_pct": 7.902
         },
         {
-          "bucket": "40–59.9 中高風險",
-          "samples": 1,
-          "avg_mdd_pct": 11.084,
-          "median_mdd_pct": 11.084,
-          "p90_mdd_pct": 11.084
+          "bucket": "40–59.9 中低風險",
+          "samples": 69,
+          "avg_mdd_pct": 6.891,
+          "median_mdd_pct": 4.562,
+          "p90_mdd_pct": 21.001
         },
         {
-          "bucket": "60–79.9 中低風險",
-          "samples": 0,
-          "avg_mdd_pct": null,
-          "median_mdd_pct": null,
-          "p90_mdd_pct": null
+          "bucket": "60–79.9 中高風險",
+          "samples": 4,
+          "avg_mdd_pct": 7.871,
+          "median_mdd_pct": 5.573,
+          "p90_mdd_pct": 14.575
         },
         {
-          "bucket": "80–100 低風險",
+          "bucket": "80–100 高風險",
           "samples": 0,
           "avg_mdd_pct": null,
           "median_mdd_pct": null,
@@ -77,5 +75,48 @@
         }
       ]
     }
+  },
+  "calibration_20d": {
+    "train_samples": 427,
+    "validation_samples": 184,
+    "suggested_thresholds": [
+      21.1,
+      27.6,
+      37.1
+    ],
+    "train_avg_mdd_pct": [
+      3.185,
+      4.259,
+      5.238,
+      7.738
+    ],
+    "train_bucket_samples": [
+      85,
+      146,
+      110,
+      86
+    ],
+    "validation_buckets_low_to_high_score": [
+      {
+        "samples": 19,
+        "avg_mdd_pct": 4.346,
+        "p90_mdd_pct": 9.33
+      },
+      {
+        "samples": 78,
+        "avg_mdd_pct": 4.456,
+        "p90_mdd_pct": 8.15
+      },
+      {
+        "samples": 61,
+        "avg_mdd_pct": 5.613,
+        "p90_mdd_pct": 8.505
+      },
+      {
+        "samples": 26,
+        "avg_mdd_pct": 5.16,
+        "p90_mdd_pct": 7.644
+      }
+    ]
   }
 }
