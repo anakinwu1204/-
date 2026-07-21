@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""回測做多提醒：訊號後一交易日收盤進場，持有五個交易日。"""
+"""回測做多提醒：訊號後一交易日收盤進場，預設持有三個交易日。"""
 
 from __future__ import annotations
 
@@ -38,23 +38,24 @@ def summarize(trades: list[dict]) -> dict:
     }
 
 
-def run(rows: list[dict[str, float | str]]) -> dict:
+def run(rows: list[dict[str, float | str]], holding_days: int = 3) -> dict:
     closes = [float(row["close"]) for row in rows]
     dates = [str(row["date"]) for row in rows]
     candidates = []
-    for i in range(119, len(rows) - 6):
+    exit_offset = holding_days + 1
+    for i in range(119, len(rows) - exit_offset):
         score = calculate(rows[:i + 1])
         flags = signal_flags(score)
         if not any(flags.values()):
             continue
-        path = closes[i + 1:i + 7]
+        path = closes[i + 1:i + exit_offset + 1]
         peak, worst = path[0], 0.0
         for close in path[1:]:
             peak = max(peak, close)
             worst = max(worst, (peak - close) / peak * 100)
         candidates.append({
             "signal_index": i, "signal_date": dates[i], "entry_date": dates[i + 1],
-            "exit_date": dates[i + 6], "signal": "strong" if flags["strong"] else
+            "exit_date": dates[i + exit_offset], "signal": "strong" if flags["strong"] else
             "ready" if flags["ready"] else "pullback",
             "return_pct": round((path[-1] / path[0] - 1) * 100, 4),
             "max_drawdown_pct": round(worst, 4),
@@ -66,17 +67,17 @@ def run(rows: list[dict[str, float | str]]) -> dict:
         if trade["signal_index"] < last_exit_index:
             continue
         independent.append(trade)
-        last_exit_index = trade["signal_index"] + 6
+        last_exit_index = trade["signal_index"] + exit_offset
     strong_candidates = [trade for trade in candidates if trade["signal"] == "strong"]
     strong_independent, last_exit_index = [], -1
     for trade in strong_candidates:
         if trade["signal_index"] < last_exit_index:
             continue
         strong_independent.append(trade)
-        last_exit_index = trade["signal_index"] + 6
+        last_exit_index = trade["signal_index"] + exit_offset
     return {
-        "data_start": dates[0], "data_end": dates[-1], "holding_trading_days": 5,
-        "execution": "訊號日收盤後確認；下一交易日收盤進場；第五個交易日收盤出場",
+        "data_start": dates[0], "data_end": dates[-1], "holding_trading_days": holding_days,
+        "execution": f"訊號日收盤後確認；下一交易日收盤進場；第{holding_days}個交易日收盤出場",
         "all_signal_observations": summarize(candidates),
         "non_overlapping_trades": summarize(independent),
         "strong_non_overlapping_trades": summarize(strong_independent),
@@ -88,8 +89,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("csv", type=Path, nargs="?", default=Path("market_history.csv"))
     parser.add_argument("--report", type=Path, default=Path("long_entry_backtest_report.json"))
+    parser.add_argument("--holding-days", type=int, default=3)
     args = parser.parse_args()
-    report = run(load_csv(args.csv))
+    if args.holding_days < 1:
+        parser.error("holding-days 必須大於 0")
+    report = run(load_csv(args.csv), args.holding_days)
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({key: value for key, value in report.items() if key != "trades"},
                      ensure_ascii=False, indent=2))
