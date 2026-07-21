@@ -33,6 +33,8 @@ python3 -m unittest -v
 
 做多訊號的出場週期固定為十個交易日。`python3 long_entry_backtest.py market_history.csv` 會以訊號後一交易日收盤作進場代理、第十個交易日收盤出場，並輸出 `long_entry_backtest_report.json`；主要統計採持有期間不重複進場的交易，以免連續訊號灌高樣本數。也可用 `--holding-days` 測試其他持有期。
 
+入場提醒頁另含做空監控：總風險至少40分、指數跌破季線、季線斜率為負、三大法人合計賣超。由於現有750日資料中的十日做空條件未通過後30%樣本外驗證，即使全部成立也只顯示「做空觀察」，不宣稱為已驗證的進場訊號。正式啟用前需補入更多空頭循環資料並納入融券或反向ETF成本。
+
 ### 環境變數
 
 部署環境可設定 `HOST`、`PORT`、`CSV_PATH`、`AUTO_REFRESH_MINUTES`、`TWSE_REFRESH_MONTHS`、`TWSE_REFRESH_LIMIT` 與 `TWSE_REQUEST_DELAY`。命令列參數優先於環境變數；設定範例見 `.env.example`。本機可執行 `set -a; source .env; set +a; python3 dashboard_server.py`。`.env` 已排除於版本控制，請勿把密鑰提交到 repository。TWSE 目前使用的公開資料端點不需要 API key。

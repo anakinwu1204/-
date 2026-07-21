@@ -16,6 +16,15 @@ function render(data){
  ];
  $('#conditions').innerHTML=items.map(([n,ok,v,d])=>`<article class="panel condition" style="--condition:${ok?'#3ee0c2':'#ff647c'}"><small>${ok?'已通過':'未通過'}</small><strong>${v}</strong><p>${n}<br>${d}</p></article>`).join('');
  $('#checklist').innerHTML=items.map(([n,ok,v])=>`<div class="check-row"><span class="check-icon" style="color:${ok?'#3ee0c2':'#ff647c'}">${ok?'✓':'×'}</span><span>${n}</span><span class="check-value">${v}</span></div>`).join('');
+ const shortItems=[
+  ['總風險 ≥40',l.total>=40,`${fmt(l.total,1)} 分`],
+  ['指數跌破季線',m.distance_ma60_pct<0,`${signed(m.distance_ma60_pct,'%')}`],
+  ['季線斜率為負',m.ma60_slope_20d_pct<0,`${signed(m.ma60_slope_20d_pct,'%')}`],
+  ['三大法人合計賣超',m.institutional_net_ratio_pct<0,`${signed(m.institutional_net_ratio_pct,'%')}`]
+ ],shortPassed=shortItems.filter(x=>x[1]).length,shortWatch=shortPassed===shortItems.length;
+ $('#shortSignal').style.setProperty('--signal',shortWatch?'#ffc857':'#ff647c');$('#shortSignal span').textContent=shortWatch?'做空觀察':'不適合做空';
+ $('#shortCopy').textContent=shortWatch?'四項弱勢條件同時成立，但十日做空尚未通過樣本外驗證，只適合列入觀察。':`目前僅通過 ${shortPassed}/4 項弱勢條件，未形成做空觀察訊號。`;
+ $('#shortChecklist').innerHTML=shortItems.map(([n,ok,v])=>`<div class="check-row"><span class="check-icon" style="color:${ok?'#ffc857':'#60738c'}">${ok?'✓':'×'}</span><span>${n}</span><span class="check-value">${v}</span></div>`).join('');
 }
 async function load(){try{const r=await fetch('/api/dashboard',{headers:{Accept:'application/json'}}),d=await r.json();if(!r.ok)throw Error(d.error||'資料讀取失敗');render(d)}catch(e){$('#error').hidden=false;$('#error').textContent=e.message}}
 load();
