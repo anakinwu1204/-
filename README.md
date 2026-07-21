@@ -31,7 +31,7 @@ python3 -m unittest -v
 
 做多入場提醒頁位於 `/dashboard/entry.html`。它使用收盤後資料，依總風險分數、指數與季線位置、季線斜率及20日動能，判斷下一交易日為「適合分批做多／可考慮分批／接近條件／暫不適合」，並列出未通過條件。訊號門檻取自 `CALIBRATION.md` 的歷史檢查，只作風險管理參考。
 
-做多訊號的出場週期固定為三個交易日。`python3 long_entry_backtest.py market_history.csv` 會以訊號後一交易日收盤作進場代理、第三個交易日收盤出場，並輸出 `long_entry_backtest_report.json`；主要統計採持有期間不重複進場的交易，以免連續訊號灌高樣本數。也可用 `--holding-days` 測試其他持有期。
+做多訊號的出場週期固定為十個交易日。`python3 long_entry_backtest.py market_history.csv` 會以訊號後一交易日收盤作進場代理、第十個交易日收盤出場，並輸出 `long_entry_backtest_report.json`；主要統計採持有期間不重複進場的交易，以免連續訊號灌高樣本數。也可用 `--holding-days` 測試其他持有期。做空監控維持三個交易日。
 
 做多與做空已拆成獨立頁面：`/dashboard/entry.html` 與 `/dashboard/short.html`。做空監控條件為總風險至少40分、指數跌破季線、季線斜率為負、三大法人合計賣超。由於現有750日資料中的三日做空條件未通過後30%樣本外驗證，即使全部成立也只顯示「做空觀察」，不宣稱為已驗證的進場訊號。正式啟用前需補入更多空頭循環資料並納入融券或反向ETF成本。
 
