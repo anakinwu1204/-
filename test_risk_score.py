@@ -1,0 +1,82 @@
+import unittest
+
+from risk_score import calculate, classify, institutional_score, margin_maintenance_score, margin_score, margin_structure_score, technical_components, volume_components, volume_score
+
+
+class RiskScoreTest(unittest.TestCase):
+    def test_classification(self):
+        self.assertEqual(classify(85), "低風險")
+        self.assertEqual(classify(30), "高風險")
+
+    def test_margin_deleveraging_is_safer(self):
+        safe = margin_score(-4, -4, -8, 1, 0)
+        risky = margin_score(6, 7, 12, 2, 2)
+        self.assertGreater(safe, risky)
+
+    def test_margin_maintenance_affects_margin_score(self):
+        healthy = margin_score(0, 0, 0, 0, 0, 190)
+        stressed = margin_score(0, 0, 0, 0, 0, 135)
+        self.assertGreater(healthy, stressed)
+        self.assertGreater(margin_maintenance_score(180), margin_maintenance_score(140))
+
+    def test_concentrated_margin_structure_is_riskier(self):
+        diversified = margin_structure_score(22, 90, 38, 10, 3)
+        concentrated = margin_structure_score(58, 480, 72, 45, 28)
+        self.assertGreater(diversified, concentrated)
+
+    def test_forced_deleveraging_is_not_scored_as_safe(self):
+        rebound = margin_score(-4, -5, -8, 2, 0, 0, 4)
+        selloff = margin_score(-4, -5, -8, -2, 0, 0, -8)
+        self.assertGreater(rebound, selloff)
+
+    def test_overheated_volume_is_penalized(self):
+        normal = volume_score(1.0, 0.5, 0)
+        hot = volume_score(1.8, 2.0, 6)
+        self.assertGreater(normal, hot)
+
+    def test_heavy_volume_selloff_is_penalized(self):
+        normal = volume_score(1, .2, 0, 1, .2)
+        selloff = volume_score(1.6, -3, 0, 1.6, .5)
+        self.assertGreater(normal, selloff)
+
+    def test_bullish_technical_structure_is_safer(self):
+        bullish = technical_components(110, 108, 105, 100, 3, 5, -2)
+        bearish = technical_components(85, 90, 95, 100, -3, -12, -18)
+        self.assertGreater(sum(bullish.values()), sum(bearish.values()))
+
+    def test_three_day_institutional_buying_is_safer(self):
+        buy = institutional_score(6, 1, 0, 7, 3, 1)
+        sell = institutional_score(-6, -1, 0, -7, -3, 1)
+        self.assertGreater(buy, sell)
+
+    def test_institutional_strength_affects_score(self):
+        strong = institutional_score(1, 0, 0, 1, 1, 1, 2, 2)
+        weak = institutional_score(1, 0, 0, 1, 1, 1, -2, -2)
+        self.assertGreater(strong, weak)
+
+    def test_end_to_end_score(self):
+        rows = []
+        for day in range(120):
+            rows.append({
+                "date": f"2026-{day + 1:03d}", "close": 20000 + day * 5,
+                "volume": 4_000_000 + day * 1_000,
+                "margin_balance": 300_000_000 - day * 100_000,
+                "turnover_value": 400_000_000, "foreign_net": 22_000_000,
+                "investment_trust_net": 2_000_000, "dealer_net": 1_000_000,
+            })
+        result = calculate(rows)
+        self.assertGreaterEqual(result.total, 0)
+        self.assertLessEqual(result.total, 100)
+        self.assertIn("ma60", result.metrics)
+        self.assertIn("estimated_margin_maintenance_pct", result.metrics)
+        self.assertIn("volume_ratio_5d", result.metrics)
+        self.assertIn("volume_ratio_previous_day", result.metrics)
+        self.assertIn("volume", result.metrics)
+        self.assertIn("margin_speed_score", result.metrics)
+        self.assertIn("institutional_strength_5d_z", result.metrics)
+        self.assertIn("institutional_strength_20d_z", result.metrics)
+        self.assertEqual(result.metrics["estimated_margin_maintenance_pct"], 0)
+
+
+if __name__ == "__main__":
+    unittest.main()

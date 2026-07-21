@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: taiwan-market-risk
+    runtime: python
+    plan: free
+    buildCommand: python3 -m py_compile dashboard_server.py risk_score.py twse_scraper.py
+    startCommand: python3 dashboard_server.py
+    healthCheckPath: /healthz
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: AUTO_REFRESH_MINUTES
+        value: 360
+      - key: CSV_PATH
+        value: market.csv
+      - key: TWSE_REFRESH_MONTHS
+        value: 8
+      - key: TWSE_REFRESH_LIMIT
+        value: 140
+      - key: TWSE_REQUEST_DELAY
+        value: 0.25
+      - key: PYTHON_VERSION
+        value: 3.11.11
