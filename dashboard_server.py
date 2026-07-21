@@ -115,7 +115,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--csv", type=Path,
                         default=Path(os.environ.get("CSV_PATH", str(ROOT / "market.csv"))))
-    parser.add_argument("--host", default=os.environ.get("HOST", "127.0.0.1"))
+    # 公開雲端平台必須監聽所有介面；本機仍可用 --host 127.0.0.1 覆蓋。
+    parser.add_argument("--host", default=os.environ.get("HOST", "0.0.0.0"))
     parser.add_argument("--port", type=int, default=env_int("PORT", 8000))
     parser.add_argument("--auto-refresh-minutes", type=int,
                         default=env_int("AUTO_REFRESH_MINUTES", 0),

@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: free
     buildCommand: python3 -m py_compile dashboard_server.py risk_score.py twse_scraper.py
-    startCommand: python3 dashboard_server.py
+    startCommand: python3 -u dashboard_server.py
     healthCheckPath: /healthz
     envVars:
       - key: HOST
