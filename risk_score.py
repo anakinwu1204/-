@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""台股大盤風險分數：0（高風險）到 100（低風險）。"""
+"""台股大盤風險分數：0（低風險）到 100（高風險）。"""
 
 from __future__ import annotations
 
@@ -275,12 +275,12 @@ def institutional_score(foreign_ratio: float, trust_ratio: float,
 
 def classify(total: float) -> str:
     if total >= 80:
-        return "低風險"
+        return "高風險"
     if total >= 60:
-        return "中低風險"
-    if total >= 40:
         return "中高風險"
-    return "高風險"
+    if total >= 40:
+        return "中低風險"
+    return "低風險"
 
 
 def calculate(rows: list[dict[str, float | str]]) -> Score:
@@ -373,7 +373,8 @@ def calculate(rows: list[dict[str, float | str]]) -> Score:
             break
     streak = signs[0] * (len(signs) - (1 if len(signs) > 1 and signs[-1] != signs[0] else 0))
 
-    scores = {
+    # 各因子函式沿用既有「安全分」規則，統一在輸出邊界反轉為風險分。
+    safety_scores = {
         "technical": technical_score(close, ma20, ma60, ma120, ma60_slope_20d,
                                      return_20d, drawdown_60d, distances),
         "volume": volume_score(volume_ratio, daily_return, margin_3d,
@@ -384,6 +385,7 @@ def calculate(rows: list[dict[str, float | str]]) -> Score:
                                margin_excess_growth_20d, current_structure_score),
         "institutional": institutional_score(ratios["foreign_net"], ratios["investment_trust_net"], ratios["dealer_net"], total_ratio, streak, volume_ratio, institutional_strength_20d_z, institutional_strength_5d_z),
     }
+    scores = {key: clamp(100 - value) for key, value in safety_scores.items()}
     total = fmean(scores.values())
     metrics = {"close": close, "ma20": ma20, "ma60": ma60, "ma120": ma120,
                "distance_ma60_pct": distance_ma60,
@@ -391,26 +393,27 @@ def calculate(rows: list[dict[str, float | str]]) -> Score:
                "volume_ratio_previous_day": volume_ratio_previous_day,
                "volume_ratio_5d": volume_ratio5, "volume_ratio_20d": volume_ratio,
                "volume_cv_20d": volume_cv20,
-               "volume_normality_score": volume_parts["normality"],
-               "volume_confirmation_score": volume_parts["confirmation"],
-               "volume_day_comparison_score": volume_parts["day_comparison"],
-               "volume_stability_score": volume_parts["stability"],
+               "volume_normality_score": 100 - volume_parts["normality"],
+               "volume_confirmation_score": 100 - volume_parts["confirmation"],
+               "volume_day_comparison_score": 100 - volume_parts["day_comparison"],
+               "volume_stability_score": 100 - volume_parts["stability"],
                "ma60_slope_20d_pct": ma60_slope_20d,
                "return_20d_pct": return_20d, "drawdown_60d_pct": drawdown_60d,
-               "technical_position_score": technical_parts["position"],
-               "technical_trend_score": technical_parts["trend"],
-               "technical_momentum_score": technical_parts["momentum"],
-               "technical_drawdown_score": technical_parts["drawdown"],
+               "technical_position_score": 100 - technical_parts["position"],
+               "technical_trend_score": 100 - technical_parts["trend"],
+               "technical_momentum_score": 100 - technical_parts["momentum"],
+               "technical_drawdown_score": 100 - technical_parts["drawdown"],
                "daily_return_pct": daily_return, "margin_change_3d_pct": margin_3d,
                "margin_change_5d_pct": margin_5d, "margin_change_20d_pct": margin_20d,
                "margin_change_streak": float(margin_change_streak),
                "margin_vs_ma20_pct": margin_vs_ma20,
                "margin_excess_growth_20d_pct": margin_excess_growth_20d,
-               "margin_speed_score": current_margin_speed_score,
+               "margin_speed_score": 100 - current_margin_speed_score,
                "estimated_margin_maintenance_pct": estimated_margin_maintenance,
-               "margin_maintenance_score": (margin_maintenance_score(estimated_margin_maintenance)
+               "margin_maintenance_score": (100 - margin_maintenance_score(estimated_margin_maintenance)
                                             if estimated_margin_maintenance > 0 else 0.0),
-               "margin_structure_score": current_structure_score,
+               "margin_structure_score": (100 - current_structure_score
+                                            if current_structure_score > 0 else 0.0),
                **structure_values,
                "institutional_net_ratio_pct": total_ratio,
                "institutional_5d_avg_ratio_pct": prior_5d_mean,

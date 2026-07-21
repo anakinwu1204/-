@@ -5,8 +5,8 @@ from risk_score import calculate, classify, institutional_score, margin_maintena
 
 class RiskScoreTest(unittest.TestCase):
     def test_classification(self):
-        self.assertEqual(classify(85), "低風險")
-        self.assertEqual(classify(30), "高風險")
+        self.assertEqual(classify(85), "高風險")
+        self.assertEqual(classify(30), "低風險")
 
     def test_margin_deleveraging_is_safer(self):
         safe = margin_score(-4, -4, -8, 1, 0)

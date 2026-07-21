@@ -58,12 +58,12 @@ def percentile(values: list[float], p: float) -> float:
 
 def bucket(score: float) -> str:
     if score < 40:
-        return "0–39.9 高風險"
+        return "0–39.9 低風險"
     if score < 60:
-        return "40–59.9 中高風險"
+        return "40–59.9 中低風險"
     if score < 80:
-        return "60–79.9 中低風險"
-    return "80–100 低風險"
+        return "60–79.9 中高風險"
+    return "80–100 高風險"
 
 
 def supervised_thresholds(records: list[dict], key: str) -> dict | None:
@@ -90,8 +90,8 @@ def supervised_thresholds(records: list[dict], key: str) -> dict | None:
                     continue
                 means = [fmean(group) for group in groups]
                 within = sum(sum((value - fmean(group)) ** 2 for value in group) for group in groups) / len(train)
-                # 分數由低至高時，平均回撤應遞減；違反單調性給予強懲罰。
-                violation = sum(max(0, means[i + 1] - means[i]) ** 2 for i in range(3)) * 10
+                # 風險分數由低至高時，平均回撤應遞增；違反單調性給予強懲罰。
+                violation = sum(max(0, means[i] - means[i + 1]) ** 2 for i in range(3)) * 10
                 objective = within + violation
                 if best is None or objective < best[0]:
                     best = (objective, cuts, means, [len(group) for group in groups])
@@ -149,7 +149,7 @@ def run_backtest(rows: list[dict[str, float | str]]) -> tuple[list[dict], dict]:
         key = f"mdd_{horizon}d_pct"
         valid = [r for r in records if r[key] != ""]
         groups = []
-        for label in ("0–39.9 高風險", "40–59.9 中高風險", "60–79.9 中低風險", "80–100 低風險"):
+        for label in ("0–39.9 低風險", "40–59.9 中低風險", "60–79.9 中高風險", "80–100 高風險"):
             values = [float(r[key]) for r in valid if bucket(float(r["score"])) == label]
             groups.append({"bucket": label, "samples": len(values),
                            "avg_mdd_pct": round(fmean(values), 3) if values else None,
@@ -167,7 +167,7 @@ def run_backtest(rows: list[dict[str, float | str]]) -> tuple[list[dict], dict]:
     report = {"data_start": rows[0]["date"], "data_end": rows[-1]["date"],
               "trading_days": len(rows), "calendar_days": span_days,
               "method": "expanding-window；每期僅使用當時及以前資料",
-              "interpretation": "分數愈高應對應愈小回撤，因此 Spearman 係數預期為負",
+              "interpretation": "分數愈高應對應愈大回撤，因此 Spearman 係數預期為正",
               "warnings": warnings, "results": summaries}
     calibration = supervised_thresholds(records, "mdd_20d_pct")
     report["calibration_20d"] = calibration
