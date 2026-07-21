@@ -75,7 +75,8 @@ class Handler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def do_GET(self) -> None:
-        if urlparse(self.path).path == "/healthz":
+        request_path = urlparse(self.path).path
+        if request_path == "/healthz":
             body = b'{"status":"ok"}'
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
@@ -83,7 +84,7 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
-        if urlparse(self.path).path == "/api/dashboard":
+        if request_path == "/api/dashboard":
             try:
                 body = json.dumps(dashboard_data(self.csv_path), ensure_ascii=False).encode()
                 self.send_response(200)
@@ -99,7 +100,7 @@ class Handler(SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(body)
             return
-        if self.path == "/":
+        if request_path in ("", "/"):
             self.path = "/dashboard/index.html"
         super().do_GET()
 
