@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>台股做空訊號提醒</title><link rel="stylesheet" href="/dashboard/style.css?v=3">
+  <style>.back{color:var(--red);text-decoration:none;font-size:13px;font-weight:700}.short-hero{padding:30px;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center}.signal{display:inline-flex;align-items:center;gap:9px;padding:8px 13px;border-radius:999px;font-weight:800;font-size:13px;background:rgba(255,100,124,.12);color:var(--signal);border:1px solid var(--signal)}.signal-dot{width:9px;height:9px;border-radius:50%;background:var(--signal)}.entry-title{font-size:clamp(30px,5vw,52px);margin:14px 0 8px}.entry-copy{color:#b8c6d8;line-height:1.65}.risk-box{text-align:center;min-width:155px;padding:22px;border-left:1px solid var(--line)}.risk-box strong{font-size:48px;display:block}.risk-box span,.notice{color:var(--muted);font-size:12px}.condition-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:14px 0}.condition{padding:20px;border-top:3px solid var(--condition)}.condition small,.condition p{color:var(--muted);font-size:12px}.condition strong{display:block;margin:10px 0 5px;font-size:21px}.detail{padding:24px}.check-list{display:grid;gap:12px}.check-row{display:grid;grid-template-columns:22px 1fr auto;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}.check-value{color:var(--muted);font-size:13px}.notice{padding:20px;line-height:1.7}@media(max-width:700px){.short-hero{grid-template-columns:1fr}.condition-grid{grid-template-columns:1fr 1fr}.risk-box{border:0;border-top:1px solid var(--line)}}@media(max-width:480px){.condition-grid{grid-template-columns:1fr}}</style>
+</head>
+<body><main class="shell">
+  <header><div><p class="eyebrow" style="color:var(--red)">SHORT SIGNAL MONITOR</p><h1>台股做空訊號提醒</h1></div><div><a class="back" href="/dashboard/entry.html">查看做多提醒 →</a><br><a class="back" href="/">← 返回風險儀表板</a></div></header>
+  <section class="panel short-hero"><div><div class="signal" id="shortSignal" style="--signal:#ff647c"><i class="signal-dot"></i><span>計算中</span></div><h2 class="entry-title" id="shortTitle">讀取最新市場資料</h2><p class="entry-copy" id="shortCopy">正在檢查四項弱勢條件。</p><p class="asof" id="asof">--</p></div><div class="risk-box"><span>目前風險分數</span><strong id="riskScore">--</strong><span>/ 100，越高越危險</span></div></section>
+  <section class="condition-grid" id="conditions"></section>
+  <section class="panel detail"><p class="eyebrow" style="color:var(--red)">SHORT CHECKLIST</p><h3>做空條件檢查</h3><div class="check-list" id="checklist"></div></section>
+  <section class="panel notice" style="margin-top:14px">目前750日資料尚未找到具樣本外正期望的三日做空規則。即使四項條件全部成立，也只顯示「做空觀察」，不視為已驗證的進場建議。做空報酬亦會受融券限制、借券成本及反向ETF追蹤誤差影響。</section>
+  <footer>資料來源：臺灣證券交易所公開資訊 · 本頁不構成投資建議</footer>
+</main><div id="error" class="error" hidden></div><script src="/dashboard/short.js?v=1"></script></body></html>
