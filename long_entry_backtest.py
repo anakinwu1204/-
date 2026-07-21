@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""回測做多提醒：訊號後一交易日收盤進場，預設持有十個交易日。"""
+"""回測做多提醒：訊號後一交易日收盤進場，預設持有三個交易日。"""
 
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ def summarize(trades: list[dict]) -> dict:
     }
 
 
-def run(rows: list[dict[str, float | str]], holding_days: int = 10) -> dict:
+def run(rows: list[dict[str, float | str]], holding_days: int = 3) -> dict:
     closes = [float(row["close"]) for row in rows]
     dates = [str(row["date"]) for row in rows]
     candidates = []
@@ -89,7 +89,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("csv", type=Path, nargs="?", default=Path("market_history.csv"))
     parser.add_argument("--report", type=Path, default=Path("long_entry_backtest_report.json"))
-    parser.add_argument("--holding-days", type=int, default=10)
+    parser.add_argument("--holding-days", type=int, default=3)
     args = parser.parse_args()
     if args.holding_days < 1:
         parser.error("holding-days 必須大於 0")
