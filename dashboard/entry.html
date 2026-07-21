@@ -13,15 +13,15 @@
   <main class="shell">
     <header><div><p class="eyebrow">LONG ENTRY MONITOR</p><h1>台股做多入場提醒</h1></div><a class="back" href="/">← 返回風險儀表板</a></header>
     <section class="panel entry-hero" id="entryHero">
-      <div><div class="signal" id="signal"><i class="signal-dot"></i><span>計算中</span></div><h2 class="entry-title" id="entryTitle">讀取最新市場資料</h2><p class="entry-copy" id="entryCopy">依風險分數、季線位置、季線斜率及20日動能判斷下一交易日是否適合分批做多。</p><p class="asof" id="asof">--</p></div>
+      <div><div class="signal" id="signal"><i class="signal-dot"></i><span>計算中</span></div><h2 class="entry-title" id="entryTitle">讀取最新市場資料</h2><p class="entry-copy" id="entryCopy">依風險分數、季線位置、季線斜率及20日動能判斷下一交易日是否適合分批做多；進場後第五個交易日收盤出場。</p><p class="asof" id="asof">--</p></div>
       <div class="risk-box"><span>目前風險分數</span><strong id="riskScore">--</strong><span>/ 100，越高越危險</span></div>
     </section>
     <section class="condition-grid" id="conditions"></section>
     <section class="result-grid">
       <article class="panel detail"><p class="eyebrow">ENTRY CHECKLIST</p><h3>入場條件檢查</h3><div class="check-list" id="checklist"></div></article>
-      <article class="panel detail"><p class="eyebrow">BACKTEST REFERENCE</p><h3>750 日歷史參考</h3><div class="stats"><div class="stat"><strong>78.7%</strong><span>風險 ≤20 的20日上漲率</span></div><div class="stat"><strong>3.45%</strong><span>風險 ≤20 的平均最大回撤</span></div><div class="stat"><strong>77.2%</strong><span>回檔布局條件20日上漲率</span></div><div class="stat"><strong>3.93%</strong><span>回檔布局平均最大回撤</span></div></div></article>
+      <article class="panel detail"><p class="eyebrow">5-DAY BACKTEST</p><h3>五個交易日出場回測</h3><div class="stats"><div class="stat"><strong>61.5%</strong><span>不重疊交易勝率（78筆）</span></div><div class="stat"><strong>+0.88%</strong><span>不重疊交易平均報酬</span></div><div class="stat"><strong>71.1%</strong><span>強訊號不重疊勝率（38筆）</span></div><div class="stat"><strong>2.31</strong><span>全部訊號樣本獲利因子</span></div></div></article>
     </section>
-    <section class="panel notice">訊號使用收盤後完整資料，適用於下一交易日的分批進場評估，不是盤中即時訊號。回測樣本為 2023-06-16 至 2026-07-21，歷史結果不保證未來績效，本頁不構成投資建議。</section>
+    <section class="panel notice">訊號使用收盤後完整資料；回測以下一交易日收盤作為進場代理，持有五個交易日後收盤出場，持有期間不重複進場。未計交易成本、滑價與ETF追蹤誤差。回測樣本為 2023-06-16 至 2026-07-21，歷史結果不保證未來績效，本頁不構成投資建議。</section>
     <footer>資料來源：臺灣證券交易所公開資訊</footer>
   </main>
   <div id="error" class="error" hidden></div>

@@ -31,6 +31,8 @@ python3 -m unittest -v
 
 做多入場提醒頁位於 `/dashboard/entry.html`。它使用收盤後資料，依總風險分數、指數與季線位置、季線斜率及20日動能，判斷下一交易日為「適合分批做多／可考慮分批／接近條件／暫不適合」，並列出未通過條件。訊號門檻取自 `CALIBRATION.md` 的歷史檢查，只作風險管理參考。
 
+做多訊號的出場週期固定為五個交易日。`python3 long_entry_backtest.py market_history.csv` 會以訊號後一交易日收盤作進場代理、第五個交易日收盤出場，並輸出 `long_entry_backtest_report.json`；主要統計採持有期間不重複進場的交易，以免連續訊號灌高樣本數。
+
 ### 環境變數
 
 部署環境可設定 `HOST`、`PORT`、`CSV_PATH`、`AUTO_REFRESH_MINUTES`、`TWSE_REFRESH_MONTHS`、`TWSE_REFRESH_LIMIT` 與 `TWSE_REQUEST_DELAY`。命令列參數優先於環境變數；設定範例見 `.env.example`。本機可執行 `set -a; source .env; set +a; python3 dashboard_server.py`。`.env` 已排除於版本控制，請勿把密鑰提交到 repository。TWSE 目前使用的公開資料端點不需要 API key。

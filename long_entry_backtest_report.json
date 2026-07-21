@@ -1,0 +1,734 @@
+{
+  "data_start": "2023-06-16",
+  "data_end": "2026-07-21",
+  "holding_trading_days": 5,
+  "execution": "訊號日收盤後確認；下一交易日收盤進場；第五個交易日收盤出場",
+  "all_signal_observations": {
+    "trades": 354,
+    "win_rate_pct": 64.69,
+    "avg_return_pct": 0.851,
+    "median_return_pct": 0.969,
+    "avg_max_drawdown_pct": 1.593,
+    "profit_factor": 2.31
+  },
+  "non_overlapping_trades": {
+    "trades": 78,
+    "win_rate_pct": 61.54,
+    "avg_return_pct": 0.881,
+    "median_return_pct": 1.23,
+    "avg_max_drawdown_pct": 1.742,
+    "profit_factor": 2.12
+  },
+  "strong_non_overlapping_trades": {
+    "trades": 38,
+    "win_rate_pct": 71.05,
+    "avg_return_pct": 1.031,
+    "median_return_pct": 1.144,
+    "avg_max_drawdown_pct": 1.249,
+    "profit_factor": 3.46
+  },
+  "trades": [
+    {
+      "signal_index": 119,
+      "signal_date": "2023-12-08",
+      "entry_date": "2023-12-11",
+      "exit_date": "2023-12-18",
+      "signal": "ready",
+      "return_pct": 1.3416,
+      "max_drawdown_pct": 0.1236
+    },
+    {
+      "signal_index": 125,
+      "signal_date": "2023-12-18",
+      "entry_date": "2023-12-19",
+      "exit_date": "2023-12-26",
+      "signal": "pullback",
+      "return_pct": 0.9967,
+      "max_drawdown_pct": 0.5186
+    },
+    {
+      "signal_index": 131,
+      "signal_date": "2023-12-26",
+      "entry_date": "2023-12-27",
+      "exit_date": "2024-01-04",
+      "signal": "strong",
+      "return_pct": -1.9107,
+      "max_drawdown_pct": 2.1257
+    },
+    {
+      "signal_index": 137,
+      "signal_date": "2024-01-04",
+      "entry_date": "2024-01-05",
+      "exit_date": "2024-01-12",
+      "signal": "pullback",
+      "return_pct": -0.036,
+      "max_drawdown_pct": 0.6091
+    },
+    {
+      "signal_index": 143,
+      "signal_date": "2024-01-12",
+      "entry_date": "2024-01-15",
+      "exit_date": "2024-01-22",
+      "signal": "pullback",
+      "return_pct": 1.5289,
+      "max_drawdown_pct": 2.1943
+    },
+    {
+      "signal_index": 149,
+      "signal_date": "2024-01-22",
+      "entry_date": "2024-01-23",
+      "exit_date": "2024-01-30",
+      "signal": "strong",
+      "return_pct": 0.8953,
+      "max_drawdown_pct": 0.4691
+    },
+    {
+      "signal_index": 155,
+      "signal_date": "2024-01-30",
+      "entry_date": "2024-01-31",
+      "exit_date": "2024-02-16",
+      "signal": "ready",
+      "return_pct": 4.0118,
+      "max_drawdown_pct": 0.2002
+    },
+    {
+      "signal_index": 161,
+      "signal_date": "2024-02-16",
+      "entry_date": "2024-02-19",
+      "exit_date": "2024-02-26",
+      "signal": "strong",
+      "return_pct": 1.6755,
+      "max_drawdown_pct": 0.4098
+    },
+    {
+      "signal_index": 167,
+      "signal_date": "2024-02-26",
+      "entry_date": "2024-02-27",
+      "exit_date": "2024-03-06",
+      "signal": "ready",
+      "return_pct": 3.4212,
+      "max_drawdown_pct": 0.1626
+    },
+    {
+      "signal_index": 173,
+      "signal_date": "2024-03-06",
+      "entry_date": "2024-03-07",
+      "exit_date": "2024-03-14",
+      "signal": "ready",
+      "return_pct": 1.241,
+      "max_drawdown_pct": 0.2994
+    },
+    {
+      "signal_index": 179,
+      "signal_date": "2024-03-14",
+      "entry_date": "2024-03-15",
+      "exit_date": "2024-03-22",
+      "signal": "ready",
+      "return_pct": 2.7737,
+      "max_drawdown_pct": 0.4799
+    },
+    {
+      "signal_index": 185,
+      "signal_date": "2024-03-22",
+      "entry_date": "2024-03-25",
+      "exit_date": "2024-04-01",
+      "signal": "ready",
+      "return_pct": 0.149,
+      "max_drawdown_pct": 0.3554
+    },
+    {
+      "signal_index": 191,
+      "signal_date": "2024-04-01",
+      "entry_date": "2024-04-02",
+      "exit_date": "2024-04-11",
+      "signal": "ready",
+      "return_pct": 1.4006,
+      "max_drawdown_pct": 0.6301
+    },
+    {
+      "signal_index": 197,
+      "signal_date": "2024-04-11",
+      "entry_date": "2024-04-12",
+      "exit_date": "2024-04-19",
+      "signal": "ready",
+      "return_pct": -5.8324,
+      "max_drawdown_pct": 5.8324
+    },
+    {
+      "signal_index": 204,
+      "signal_date": "2024-04-22",
+      "entry_date": "2024-04-23",
+      "exit_date": "2024-04-30",
+      "signal": "pullback",
+      "return_pct": 4.0681,
+      "max_drawdown_pct": 1.3626
+    },
+    {
+      "signal_index": 210,
+      "signal_date": "2024-04-30",
+      "entry_date": "2024-05-02",
+      "exit_date": "2024-05-09",
+      "signal": "ready",
+      "return_pct": 1.673,
+      "max_drawdown_pct": 0.6751
+    },
+    {
+      "signal_index": 216,
+      "signal_date": "2024-05-09",
+      "entry_date": "2024-05-10",
+      "exit_date": "2024-05-17",
+      "signal": "pullback",
+      "return_pct": 2.6541,
+      "max_drawdown_pct": 0.2149
+    },
+    {
+      "signal_index": 222,
+      "signal_date": "2024-05-17",
+      "entry_date": "2024-05-20",
+      "exit_date": "2024-05-27",
+      "signal": "ready",
+      "return_pct": 2.5016,
+      "max_drawdown_pct": 0.1948
+    },
+    {
+      "signal_index": 228,
+      "signal_date": "2024-05-27",
+      "entry_date": "2024-05-28",
+      "exit_date": "2024-06-04",
+      "signal": "ready",
+      "return_pct": -2.2956,
+      "max_drawdown_pct": 3.1301
+    },
+    {
+      "signal_index": 234,
+      "signal_date": "2024-06-04",
+      "entry_date": "2024-06-05",
+      "exit_date": "2024-06-13",
+      "signal": "pullback",
+      "return_pct": 3.85,
+      "max_drawdown_pct": 0.5049
+    },
+    {
+      "signal_index": 240,
+      "signal_date": "2024-06-13",
+      "entry_date": "2024-06-14",
+      "exit_date": "2024-06-21",
+      "signal": "strong",
+      "return_pct": 3.3267,
+      "max_drawdown_pct": 0.6524
+    },
+    {
+      "signal_index": 246,
+      "signal_date": "2024-06-21",
+      "entry_date": "2024-06-24",
+      "exit_date": "2024-07-01",
+      "signal": "pullback",
+      "return_pct": 1.0733,
+      "max_drawdown_pct": 0.3511
+    },
+    {
+      "signal_index": 252,
+      "signal_date": "2024-07-01",
+      "entry_date": "2024-07-02",
+      "exit_date": "2024-07-09",
+      "signal": "ready",
+      "return_pct": 4.4613,
+      "max_drawdown_pct": 0.0
+    },
+    {
+      "signal_index": 259,
+      "signal_date": "2024-07-10",
+      "entry_date": "2024-07-11",
+      "exit_date": "2024-07-18",
+      "signal": "ready",
+      "return_pct": -4.0654,
+      "max_drawdown_pct": 4.0654
+    },
+    {
+      "signal_index": 267,
+      "signal_date": "2024-07-22",
+      "entry_date": "2024-07-23",
+      "exit_date": "2024-08-01",
+      "signal": "pullback",
+      "return_pct": -1.0045,
+      "max_drawdown_pct": 3.2906
+    },
+    {
+      "signal_index": 273,
+      "signal_date": "2024-08-01",
+      "entry_date": "2024-08-02",
+      "exit_date": "2024-08-09",
+      "signal": "ready",
+      "return_pct": -0.7814,
+      "max_drawdown_pct": 8.352
+    },
+    {
+      "signal_index": 322,
+      "signal_date": "2024-10-15",
+      "entry_date": "2024-10-16",
+      "exit_date": "2024-10-23",
+      "signal": "strong",
+      "return_pct": 1.4071,
+      "max_drawdown_pct": 0.8825
+    },
+    {
+      "signal_index": 335,
+      "signal_date": "2024-11-04",
+      "entry_date": "2024-11-05",
+      "exit_date": "2024-11-12",
+      "signal": "pullback",
+      "return_pct": -0.5411,
+      "max_drawdown_pct": 2.429
+    },
+    {
+      "signal_index": 344,
+      "signal_date": "2024-11-15",
+      "entry_date": "2024-11-18",
+      "exit_date": "2024-11-25",
+      "signal": "pullback",
+      "return_pct": 1.7822,
+      "max_drawdown_pct": 1.283
+    },
+    {
+      "signal_index": 350,
+      "signal_date": "2024-11-25",
+      "entry_date": "2024-11-26",
+      "exit_date": "2024-12-03",
+      "signal": "ready",
+      "return_pct": 1.5376,
+      "max_drawdown_pct": 1.8355
+    },
+    {
+      "signal_index": 356,
+      "signal_date": "2024-12-03",
+      "entry_date": "2024-12-04",
+      "exit_date": "2024-12-11",
+      "signal": "strong",
+      "return_pct": -1.5123,
+      "max_drawdown_pct": 1.5882
+    },
+    {
+      "signal_index": 362,
+      "signal_date": "2024-12-11",
+      "entry_date": "2024-12-12",
+      "exit_date": "2024-12-19",
+      "signal": "pullback",
+      "return_pct": -0.497,
+      "max_drawdown_pct": 1.0204
+    },
+    {
+      "signal_index": 370,
+      "signal_date": "2024-12-23",
+      "entry_date": "2024-12-24",
+      "exit_date": "2024-12-31",
+      "signal": "strong",
+      "return_pct": -0.3682,
+      "max_drawdown_pct": 1.0336
+    },
+    {
+      "signal_index": 379,
+      "signal_date": "2025-01-06",
+      "entry_date": "2025-01-07",
+      "exit_date": "2025-01-14",
+      "signal": "strong",
+      "return_pct": -3.6097,
+      "max_drawdown_pct": 4.917
+    },
+    {
+      "signal_index": 387,
+      "signal_date": "2025-01-16",
+      "entry_date": "2025-01-17",
+      "exit_date": "2025-02-04",
+      "signal": "ready",
+      "return_pct": -1.5298,
+      "max_drawdown_pct": 3.5311
+    },
+    {
+      "signal_index": 394,
+      "signal_date": "2025-02-05",
+      "entry_date": "2025-02-06",
+      "exit_date": "2025-02-13",
+      "signal": "strong",
+      "return_pct": 0.3552,
+      "max_drawdown_pct": 0.9631
+    },
+    {
+      "signal_index": 402,
+      "signal_date": "2025-02-17",
+      "entry_date": "2025-02-18",
+      "exit_date": "2025-02-25",
+      "signal": "strong",
+      "return_pct": -1.6073,
+      "max_drawdown_pct": 1.8733
+    },
+    {
+      "signal_index": 409,
+      "signal_date": "2025-02-26",
+      "entry_date": "2025-02-27",
+      "exit_date": "2025-03-07",
+      "signal": "pullback",
+      "return_pct": -2.0696,
+      "max_drawdown_pct": 2.0696
+    },
+    {
+      "signal_index": 478,
+      "signal_date": "2025-06-10",
+      "entry_date": "2025-06-11",
+      "exit_date": "2025-06-18",
+      "signal": "strong",
+      "return_pct": -0.5045,
+      "max_drawdown_pct": 1.87
+    },
+    {
+      "signal_index": 488,
+      "signal_date": "2025-06-24",
+      "entry_date": "2025-06-25",
+      "exit_date": "2025-07-02",
+      "signal": "strong",
+      "return_pct": 0.6559,
+      "max_drawdown_pct": 1.4352
+    },
+    {
+      "signal_index": 494,
+      "signal_date": "2025-07-02",
+      "entry_date": "2025-07-03",
+      "exit_date": "2025-07-10",
+      "signal": "ready",
+      "return_pct": -0.0868,
+      "max_drawdown_pct": 1.5441
+    },
+    {
+      "signal_index": 500,
+      "signal_date": "2025-07-10",
+      "entry_date": "2025-07-11",
+      "exit_date": "2025-07-18",
+      "signal": "ready",
+      "return_pct": 2.7783,
+      "max_drawdown_pct": 0.598
+    },
+    {
+      "signal_index": 506,
+      "signal_date": "2025-07-18",
+      "entry_date": "2025-07-21",
+      "exit_date": "2025-07-28",
+      "signal": "strong",
+      "return_pct": 0.3103,
+      "max_drawdown_pct": 1.5108
+    },
+    {
+      "signal_index": 512,
+      "signal_date": "2025-07-28",
+      "entry_date": "2025-07-29",
+      "exit_date": "2025-08-05",
+      "signal": "ready",
+      "return_pct": 1.9786,
+      "max_drawdown_pct": 0.6948
+    },
+    {
+      "signal_index": 518,
+      "signal_date": "2025-08-05",
+      "entry_date": "2025-08-06",
+      "exit_date": "2025-08-13",
+      "signal": "strong",
+      "return_pct": 3.935,
+      "max_drawdown_pct": 0.0
+    },
+    {
+      "signal_index": 524,
+      "signal_date": "2025-08-13",
+      "entry_date": "2025-08-14",
+      "exit_date": "2025-08-21",
+      "signal": "ready",
+      "return_pct": -1.1386,
+      "max_drawdown_pct": 3.5008
+    },
+    {
+      "signal_index": 530,
+      "signal_date": "2025-08-21",
+      "entry_date": "2025-08-22",
+      "exit_date": "2025-08-29",
+      "signal": "ready",
+      "return_pct": 1.972,
+      "max_drawdown_pct": 1.1697
+    },
+    {
+      "signal_index": 536,
+      "signal_date": "2025-08-29",
+      "entry_date": "2025-09-01",
+      "exit_date": "2025-09-08",
+      "signal": "ready",
+      "return_pct": 1.976,
+      "max_drawdown_pct": 0.2283
+    },
+    {
+      "signal_index": 542,
+      "signal_date": "2025-09-08",
+      "entry_date": "2025-09-09",
+      "exit_date": "2025-09-16",
+      "signal": "strong",
+      "return_pct": 3.1159,
+      "max_drawdown_pct": 0.4612
+    },
+    {
+      "signal_index": 548,
+      "signal_date": "2025-09-16",
+      "entry_date": "2025-09-17",
+      "exit_date": "2025-09-24",
+      "signal": "strong",
+      "return_pct": 2.9817,
+      "max_drawdown_pct": 0.7412
+    },
+    {
+      "signal_index": 554,
+      "signal_date": "2025-09-24",
+      "entry_date": "2025-09-25",
+      "exit_date": "2025-10-03",
+      "signal": "pullback",
+      "return_pct": 2.8328,
+      "max_drawdown_pct": 1.7043
+    },
+    {
+      "signal_index": 560,
+      "signal_date": "2025-10-03",
+      "entry_date": "2025-10-07",
+      "exit_date": "2025-10-15",
+      "signal": "ready",
+      "return_pct": 0.2343,
+      "max_drawdown_pct": 1.8635
+    },
+    {
+      "signal_index": 566,
+      "signal_date": "2025-10-15",
+      "entry_date": "2025-10-16",
+      "exit_date": "2025-10-23",
+      "signal": "pullback",
+      "return_pct": -0.4182,
+      "max_drawdown_pct": 1.2496
+    },
+    {
+      "signal_index": 572,
+      "signal_date": "2025-10-23",
+      "entry_date": "2025-10-27",
+      "exit_date": "2025-11-03",
+      "signal": "pullback",
+      "return_pct": 1.218,
+      "max_drawdown_pct": 0.217
+    },
+    {
+      "signal_index": 578,
+      "signal_date": "2025-11-03",
+      "entry_date": "2025-11-04",
+      "exit_date": "2025-11-11",
+      "signal": "ready",
+      "return_pct": -1.1794,
+      "max_drawdown_pct": 1.6544
+    },
+    {
+      "signal_index": 584,
+      "signal_date": "2025-11-11",
+      "entry_date": "2025-11-12",
+      "exit_date": "2025-11-19",
+      "signal": "pullback",
+      "return_pct": -4.8913,
+      "max_drawdown_pct": 4.8913
+    },
+    {
+      "signal_index": 591,
+      "signal_date": "2025-11-20",
+      "entry_date": "2025-11-21",
+      "exit_date": "2025-11-28",
+      "signal": "ready",
+      "return_pct": 4.5074,
+      "max_drawdown_pct": 0.0
+    },
+    {
+      "signal_index": 597,
+      "signal_date": "2025-11-28",
+      "entry_date": "2025-12-01",
+      "exit_date": "2025-12-08",
+      "signal": "ready",
+      "return_pct": 3.5156,
+      "max_drawdown_pct": 0.0
+    },
+    {
+      "signal_index": 603,
+      "signal_date": "2025-12-08",
+      "entry_date": "2025-12-09",
+      "exit_date": "2025-12-16",
+      "signal": "ready",
+      "return_pct": -2.292,
+      "max_drawdown_pct": 3.0424
+    },
+    {
+      "signal_index": 610,
+      "signal_date": "2025-12-17",
+      "entry_date": "2025-12-18",
+      "exit_date": "2025-12-26",
+      "signal": "pullback",
+      "return_pct": 3.959,
+      "max_drawdown_pct": 0.0
+    },
+    {
+      "signal_index": 616,
+      "signal_date": "2025-12-26",
+      "entry_date": "2025-12-29",
+      "exit_date": "2026-01-06",
+      "signal": "ready",
+      "return_pct": 6.1276,
+      "max_drawdown_pct": 0.3601
+    },
+    {
+      "signal_index": 624,
+      "signal_date": "2026-01-08",
+      "entry_date": "2026-01-09",
+      "exit_date": "2026-01-16",
+      "signal": "pullback",
+      "return_pct": 3.6969,
+      "max_drawdown_pct": 0.424
+    },
+    {
+      "signal_index": 630,
+      "signal_date": "2026-01-16",
+      "entry_date": "2026-01-19",
+      "exit_date": "2026-01-26",
+      "signal": "strong",
+      "return_pct": 1.344,
+      "max_drawdown_pct": 1.6172
+    },
+    {
+      "signal_index": 637,
+      "signal_date": "2026-01-27",
+      "entry_date": "2026-01-28",
+      "exit_date": "2026-02-04",
+      "signal": "ready",
+      "return_pct": -1.5669,
+      "max_drawdown_pct": 3.5965
+    },
+    {
+      "signal_index": 643,
+      "signal_date": "2026-02-04",
+      "entry_date": "2026-02-05",
+      "exit_date": "2026-02-23",
+      "signal": "ready",
+      "return_pct": 6.201,
+      "max_drawdown_pct": 0.0577
+    },
+    {
+      "signal_index": 649,
+      "signal_date": "2026-02-23",
+      "entry_date": "2026-02-24",
+      "exit_date": "2026-03-04",
+      "signal": "ready",
+      "return_pct": -5.3945,
+      "max_drawdown_pct": 7.301
+    },
+    {
+      "signal_index": 656,
+      "signal_date": "2026-03-05",
+      "entry_date": "2026-03-06",
+      "exit_date": "2026-03-13",
+      "signal": "pullback",
+      "return_pct": -0.5929,
+      "max_drawdown_pct": 4.432
+    },
+    {
+      "signal_index": 664,
+      "signal_date": "2026-03-17",
+      "entry_date": "2026-03-18",
+      "exit_date": "2026-03-25",
+      "signal": "pullback",
+      "return_pct": -2.6478,
+      "max_drawdown_pct": 5.0551
+    },
+    {
+      "signal_index": 670,
+      "signal_date": "2026-03-25",
+      "entry_date": "2026-03-26",
+      "exit_date": "2026-04-02",
+      "signal": "pullback",
+      "return_pct": -2.2953,
+      "max_drawdown_pct": 4.8433
+    },
+    {
+      "signal_index": 677,
+      "signal_date": "2026-04-07",
+      "entry_date": "2026-04-08",
+      "exit_date": "2026-04-15",
+      "signal": "pullback",
+      "return_pct": 5.6406,
+      "max_drawdown_pct": 0.0
+    },
+    {
+      "signal_index": 684,
+      "signal_date": "2026-04-16",
+      "entry_date": "2026-04-17",
+      "exit_date": "2026-04-24",
+      "signal": "ready",
+      "return_pct": 5.7821,
+      "max_drawdown_pct": 0.4338
+    },
+    {
+      "signal_index": 690,
+      "signal_date": "2026-04-24",
+      "entry_date": "2026-04-27",
+      "exit_date": "2026-05-05",
+      "signal": "ready",
+      "return_pct": 2.9095,
+      "max_drawdown_pct": 1.7417
+    },
+    {
+      "signal_index": 698,
+      "signal_date": "2026-05-07",
+      "entry_date": "2026-05-08",
+      "exit_date": "2026-05-15",
+      "signal": "ready",
+      "return_pct": -1.0374,
+      "max_drawdown_pct": 1.7327
+    },
+    {
+      "signal_index": 708,
+      "signal_date": "2026-05-21",
+      "entry_date": "2026-05-22",
+      "exit_date": "2026-05-29",
+      "signal": "strong",
+      "return_pct": 5.8318,
+      "max_drawdown_pct": 1.4017
+    },
+    {
+      "signal_index": 721,
+      "signal_date": "2026-06-09",
+      "entry_date": "2026-06-10",
+      "exit_date": "2026-06-17",
+      "signal": "pullback",
+      "return_pct": 6.1349,
+      "max_drawdown_pct": 0.176
+    },
+    {
+      "signal_index": 730,
+      "signal_date": "2026-06-23",
+      "entry_date": "2026-06-24",
+      "exit_date": "2026-07-01",
+      "signal": "pullback",
+      "return_pct": 2.1184,
+      "max_drawdown_pct": 3.6396
+    },
+    {
+      "signal_index": 736,
+      "signal_date": "2026-07-01",
+      "entry_date": "2026-07-02",
+      "exit_date": "2026-07-09",
+      "signal": "ready",
+      "return_pct": -2.9727,
+      "max_drawdown_pct": 3.0483
+    },
+    {
+      "signal_index": 742,
+      "signal_date": "2026-07-09",
+      "entry_date": "2026-07-13",
+      "exit_date": "2026-07-20",
+      "signal": "pullback",
+      "return_pct": -6.4583,
+      "max_drawdown_pct": 6.973
+    }
+  ]
+}
