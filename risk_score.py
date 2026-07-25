@@ -16,8 +16,8 @@ def clamp(value: float, low: float = 0.0, high: float = 100.0) -> float:
 
 
 def to_risk_score(safety_score: float) -> float:
-    """將內部安全分反轉為對外風險分，最低保留10分基礎風險。"""
-    return clamp(100 - safety_score, 10, 100)
+    """將原始風險分整體加10分，並將最高值限制在100分。"""
+    return clamp(110 - safety_score, 10, 100)
 
 
 def lerp(x: float, x0: float, x1: float, y0: float, y1: float) -> float:

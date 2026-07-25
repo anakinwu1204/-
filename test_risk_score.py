@@ -8,8 +8,9 @@ class RiskScoreTest(unittest.TestCase):
         self.assertEqual(classify(85), "高風險")
         self.assertEqual(classify(30), "低風險")
 
-    def test_public_risk_score_has_ten_point_floor(self):
+    def test_public_risk_score_adds_ten_points(self):
         self.assertEqual(to_risk_score(100), 10)
+        self.assertEqual(to_risk_score(70), 40)
         self.assertEqual(to_risk_score(0), 100)
 
     def test_margin_deleveraging_is_safer(self):

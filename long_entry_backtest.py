@@ -16,9 +16,9 @@ def signal_flags(score) -> dict[str, bool]:
     above = m["distance_ma60_pct"] > 0
     rising = m["ma60_slope_20d_pct"] > 0
     return {
-        "strong": score.total <= 20,
-        "ready": score.total <= 25 and above and rising,
-        "pullback": (score.total <= 35 and above and rising
+        "strong": score.total <= 30,
+        "ready": score.total <= 35 and above and rising,
+        "pullback": (score.total <= 45 and above and rising
                      and -5 <= m["return_20d_pct"] <= 8),
     }
 
