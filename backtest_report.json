@@ -9,20 +9,20 @@
   "results": {
     "5d": {
       "samples": 1376,
-      "spearman_score_vs_mdd": 0.1901,
+      "spearman_score_vs_mdd": 0.1882,
       "buckets": [
         {
-          "bucket": "0–39.9 低風險",
-          "samples": 1143,
-          "avg_mdd_pct": 1.7,
+          "bucket": "10–39.9 低風險",
+          "samples": 1142,
+          "avg_mdd_pct": 1.701,
           "median_mdd_pct": 1.27,
           "p90_mdd_pct": 3.586
         },
         {
           "bucket": "40–59.9 中低風險",
-          "samples": 227,
-          "avg_mdd_pct": 2.252,
-          "median_mdd_pct": 1.727,
+          "samples": 228,
+          "avg_mdd_pct": 2.245,
+          "median_mdd_pct": 1.726,
           "p90_mdd_pct": 4.642
         },
         {
@@ -46,18 +46,18 @@
       "spearman_score_vs_mdd": 0.1705,
       "buckets": [
         {
-          "bucket": "0–39.9 低風險",
-          "samples": 1131,
-          "avg_mdd_pct": 4.391,
-          "median_mdd_pct": 3.531,
+          "bucket": "10–39.9 低風險",
+          "samples": 1130,
+          "avg_mdd_pct": 4.394,
+          "median_mdd_pct": 3.542,
           "p90_mdd_pct": 7.901
         },
         {
           "bucket": "40–59.9 中低風險",
-          "samples": 224,
-          "avg_mdd_pct": 5.58,
-          "median_mdd_pct": 3.681,
-          "p90_mdd_pct": 11.269
+          "samples": 225,
+          "avg_mdd_pct": 5.563,
+          "median_mdd_pct": 3.675,
+          "p90_mdd_pct": 11.258
         },
         {
           "bucket": "60–79.9 中高風險",
@@ -80,36 +80,36 @@
     "train_samples": 952,
     "validation_samples": 409,
     "suggested_thresholds": [
-      21.4,
-      26.7,
+      21.8,
+      28.2,
       41.6
     ],
     "train_avg_mdd_pct": [
-      3.38,
-      4.033,
-      4.6,
+      3.332,
+      4.11,
+      4.633,
       5.281
     ],
     "train_bucket_samples": [
       140,
-      237,
-      432,
+      287,
+      382,
       143
     ],
     "validation_buckets_low_to_high_score": [
       {
-        "samples": 59,
+        "samples": 67,
         "avg_mdd_pct": 3.579,
-        "p90_mdd_pct": 6.788
+        "p90_mdd_pct": 5.971
       },
       {
-        "samples": 131,
-        "avg_mdd_pct": 4.124,
-        "p90_mdd_pct": 7.124
+        "samples": 142,
+        "avg_mdd_pct": 4.169,
+        "p90_mdd_pct": 7.438
       },
       {
-        "samples": 184,
-        "avg_mdd_pct": 5.576,
+        "samples": 165,
+        "avg_mdd_pct": 5.731,
         "p90_mdd_pct": 9.33
       },
       {

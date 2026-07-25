@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""台股大盤風險分數：0（低風險）到 100（高風險）。"""
+"""台股大盤風險分數：10（最低風險）到 100（最高風險）。"""
 
 from __future__ import annotations
 
@@ -13,6 +13,11 @@ from statistics import fmean, pstdev
 
 def clamp(value: float, low: float = 0.0, high: float = 100.0) -> float:
     return max(low, min(high, value))
+
+
+def to_risk_score(safety_score: float) -> float:
+    """將內部安全分反轉為對外風險分，最低保留10分基礎風險。"""
+    return clamp(100 - safety_score, 10, 100)
 
 
 def lerp(x: float, x0: float, x1: float, y0: float, y1: float) -> float:
@@ -385,7 +390,7 @@ def calculate(rows: list[dict[str, float | str]]) -> Score:
                                margin_excess_growth_20d, current_structure_score),
         "institutional": institutional_score(ratios["foreign_net"], ratios["investment_trust_net"], ratios["dealer_net"], total_ratio, streak, volume_ratio, institutional_strength_20d_z, institutional_strength_5d_z),
     }
-    scores = {key: clamp(100 - value) for key, value in safety_scores.items()}
+    scores = {key: to_risk_score(value) for key, value in safety_scores.items()}
     total = fmean(scores.values())
     metrics = {"close": close, "ma20": ma20, "ma60": ma60, "ma120": ma120,
                "distance_ma60_pct": distance_ma60,
@@ -393,26 +398,26 @@ def calculate(rows: list[dict[str, float | str]]) -> Score:
                "volume_ratio_previous_day": volume_ratio_previous_day,
                "volume_ratio_5d": volume_ratio5, "volume_ratio_20d": volume_ratio,
                "volume_cv_20d": volume_cv20,
-               "volume_normality_score": 100 - volume_parts["normality"],
-               "volume_confirmation_score": 100 - volume_parts["confirmation"],
-               "volume_day_comparison_score": 100 - volume_parts["day_comparison"],
-               "volume_stability_score": 100 - volume_parts["stability"],
+               "volume_normality_score": to_risk_score(volume_parts["normality"]),
+               "volume_confirmation_score": to_risk_score(volume_parts["confirmation"]),
+               "volume_day_comparison_score": to_risk_score(volume_parts["day_comparison"]),
+               "volume_stability_score": to_risk_score(volume_parts["stability"]),
                "ma60_slope_20d_pct": ma60_slope_20d,
                "return_20d_pct": return_20d, "drawdown_60d_pct": drawdown_60d,
-               "technical_position_score": 100 - technical_parts["position"],
-               "technical_trend_score": 100 - technical_parts["trend"],
-               "technical_momentum_score": 100 - technical_parts["momentum"],
-               "technical_drawdown_score": 100 - technical_parts["drawdown"],
+               "technical_position_score": to_risk_score(technical_parts["position"]),
+               "technical_trend_score": to_risk_score(technical_parts["trend"]),
+               "technical_momentum_score": to_risk_score(technical_parts["momentum"]),
+               "technical_drawdown_score": to_risk_score(technical_parts["drawdown"]),
                "daily_return_pct": daily_return, "margin_change_3d_pct": margin_3d,
                "margin_change_5d_pct": margin_5d, "margin_change_20d_pct": margin_20d,
                "margin_change_streak": float(margin_change_streak),
                "margin_vs_ma20_pct": margin_vs_ma20,
                "margin_excess_growth_20d_pct": margin_excess_growth_20d,
-               "margin_speed_score": 100 - current_margin_speed_score,
+               "margin_speed_score": to_risk_score(current_margin_speed_score),
                "estimated_margin_maintenance_pct": estimated_margin_maintenance,
-               "margin_maintenance_score": (100 - margin_maintenance_score(estimated_margin_maintenance)
+               "margin_maintenance_score": (to_risk_score(margin_maintenance_score(estimated_margin_maintenance))
                                             if estimated_margin_maintenance > 0 else 0.0),
-               "margin_structure_score": (100 - current_structure_score
+               "margin_structure_score": (to_risk_score(current_structure_score)
                                             if current_structure_score > 0 else 0.0),
                **structure_values,
                "institutional_net_ratio_pct": total_ratio,

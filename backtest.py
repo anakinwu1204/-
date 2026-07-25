@@ -58,7 +58,7 @@ def percentile(values: list[float], p: float) -> float:
 
 def bucket(score: float) -> str:
     if score < 40:
-        return "0–39.9 低風險"
+        return "10–39.9 低風險"
     if score < 60:
         return "40–59.9 中低風險"
     if score < 80:
@@ -149,7 +149,7 @@ def run_backtest(rows: list[dict[str, float | str]]) -> tuple[list[dict], dict]:
         key = f"mdd_{horizon}d_pct"
         valid = [r for r in records if r[key] != ""]
         groups = []
-        for label in ("0–39.9 低風險", "40–59.9 中低風險", "60–79.9 中高風險", "80–100 高風險"):
+        for label in ("10–39.9 低風險", "40–59.9 中低風險", "60–79.9 中高風險", "80–100 高風險"):
             values = [float(r[key]) for r in valid if bucket(float(r["score"])) == label]
             groups.append({"bucket": label, "samples": len(values),
                            "avg_mdd_pct": round(fmean(values), 3) if values else None,

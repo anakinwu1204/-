@@ -9,21 +9,21 @@
   "results": {
     "5d": {
       "samples": 1376,
-      "spearman_score_vs_mdd": 0.1888,
+      "spearman_score_vs_mdd": 0.1883,
       "buckets": [
         {
-          "bucket": "0–39.9 低風險",
-          "samples": 1106,
-          "avg_mdd_pct": 1.67,
+          "bucket": "10–39.9 低風險",
+          "samples": 1104,
+          "avg_mdd_pct": 1.669,
           "median_mdd_pct": 1.25,
           "p90_mdd_pct": 3.555
         },
         {
           "bucket": "40–59.9 中低風險",
-          "samples": 262,
-          "avg_mdd_pct": 2.297,
+          "samples": 264,
+          "avg_mdd_pct": 2.296,
           "median_mdd_pct": 1.724,
-          "p90_mdd_pct": 5.059
+          "p90_mdd_pct": 5.04
         },
         {
           "bucket": "60–79.9 中高風險",
@@ -43,21 +43,21 @@
     },
     "20d": {
       "samples": 1361,
-      "spearman_score_vs_mdd": 0.1845,
+      "spearman_score_vs_mdd": 0.1856,
       "buckets": [
         {
-          "bucket": "0–39.9 低風險",
-          "samples": 1096,
+          "bucket": "10–39.9 低風險",
+          "samples": 1094,
           "avg_mdd_pct": 4.312,
           "median_mdd_pct": 3.501,
-          "p90_mdd_pct": 7.653
+          "p90_mdd_pct": 7.657
         },
         {
           "bucket": "40–59.9 中低風險",
-          "samples": 257,
-          "avg_mdd_pct": 5.754,
+          "samples": 259,
+          "avg_mdd_pct": 5.741,
           "median_mdd_pct": 4.384,
-          "p90_mdd_pct": 11.562
+          "p90_mdd_pct": 11.433
         },
         {
           "bucket": "60–79.9 中高風險",
@@ -80,41 +80,41 @@
     "train_samples": 952,
     "validation_samples": 409,
     "suggested_thresholds": [
-      23.0,
-      28.4,
-      42.0
+      23.5,
+      27.7,
+      42.2
     ],
     "train_avg_mdd_pct": [
-      3.241,
-      4.135,
-      4.549,
-      5.382
+      3.307,
+      4.073,
+      4.53,
+      5.342
     ],
     "train_bucket_samples": [
-      137,
-      242,
-      429,
-      144
+      138,
+      194,
+      477,
+      143
     ],
     "validation_buckets_low_to_high_score": [
       {
-        "samples": 65,
-        "avg_mdd_pct": 3.567,
+        "samples": 69,
+        "avg_mdd_pct": 3.507,
         "p90_mdd_pct": 5.483
       },
       {
-        "samples": 115,
-        "avg_mdd_pct": 3.964,
-        "p90_mdd_pct": 7.071
+        "samples": 90,
+        "avg_mdd_pct": 3.941,
+        "p90_mdd_pct": 7.142
       },
       {
-        "samples": 172,
-        "avg_mdd_pct": 5.454,
-        "p90_mdd_pct": 9.33
+        "samples": 193,
+        "avg_mdd_pct": 5.323,
+        "p90_mdd_pct": 8.993
       },
       {
         "samples": 57,
-        "avg_mdd_pct": 8.151,
+        "avg_mdd_pct": 8.183,
         "p90_mdd_pct": 21.916
       }
     ]

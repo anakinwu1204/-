@@ -1,12 +1,16 @@
 import unittest
 
-from risk_score import calculate, classify, institutional_score, margin_maintenance_score, margin_score, margin_structure_score, technical_components, volume_components, volume_score
+from risk_score import calculate, classify, institutional_score, margin_maintenance_score, margin_score, margin_structure_score, technical_components, to_risk_score, volume_components, volume_score
 
 
 class RiskScoreTest(unittest.TestCase):
     def test_classification(self):
         self.assertEqual(classify(85), "高風險")
         self.assertEqual(classify(30), "低風險")
+
+    def test_public_risk_score_has_ten_point_floor(self):
+        self.assertEqual(to_risk_score(100), 10)
+        self.assertEqual(to_risk_score(0), 100)
 
     def test_margin_deleveraging_is_safer(self):
         safe = margin_score(-4, -4, -8, 1, 0)
