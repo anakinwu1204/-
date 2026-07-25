@@ -1,0 +1,45 @@
+name: Update TWSE market data
+
+on:
+  schedule:
+    # GitHub Actions 使用 UTC；11:00 UTC = 台灣時間 19:00。
+    - cron: "0 11 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-twse-market-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TZ: Asia/Taipei
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fetch latest TWSE data
+        run: python3 twse_scraper.py --months 8 --limit 140 --delay 0.25 --output market.csv
+
+      - name: Commit updated data
+        run: |
+          if git diff --quiet -- market.csv; then
+            echo "No new complete trading-day data."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add market.csv
+          git commit -m "Update TWSE market data"
+          git push

@@ -43,6 +43,8 @@ python3 -m unittest -v
 
 專案附有 `render.yaml`，可用 Render Blueprint 部署。Web Service 會監聽平台提供的 `PORT`，提供 `/healthz` 健康檢查，並在啟動後每6小時補抓證交所資料。將整個專案（包含作為啟動基底的 `market.csv`）推送至 GitHub，再於 Render 選擇 **New → Blueprint**、連接該 repository 並套用 `render.yaml`；完成後會取得公開的 `https://...onrender.com` 網址。
 
+`.github/workflows/update-market.yml` 會在週一至週五台灣時間19:00自動抓取最新完整交易日。資料有變化時，GitHub Actions 只提交 `market.csv`，再由 Render Auto-Deploy 更新網站；休市或資料尚未完整時不會產生空提交。GitHub 排程不是即時排程器，尖峰時可能延遲數分鐘，也可在 Actions 頁面手動執行 `Update TWSE market data`。
+
 若不用 Blueprint，可在 Render 的 **Environment** 頁面依 `.env.example` 新增同名變數；`PORT` 通常由 Render 自動提供，不必手動建立。秘密值請用 Render 的 Secret 類型保存。
 
 免費服務的檔案系統不是永久儲存；服務重啟時會回到Git版本中的 `market.csv`，之後再自動補抓。長期正式營運應改用PostgreSQL或付費持久磁碟，並將更新工作拆成單獨排程。
