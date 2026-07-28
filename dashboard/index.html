@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>台股大盤風險儀表板</title>
   <link rel="stylesheet" href="/dashboard/style.css?v=2">
-  <style>.market-now{grid-template-columns:repeat(4,1fr);min-width:55%}.header-actions{display:grid;justify-items:end;gap:9px}.nav-links{display:flex;gap:14px}.nav-link{color:#3ee0c2;text-decoration:none;font-size:13px;font-weight:700}.nav-link.short{color:#ff647c}.nav-link:hover{text-decoration:underline}</style>
+  <style>.market-now{grid-template-columns:repeat(4,1fr);min-width:55%}.header-actions{display:grid;justify-items:end;gap:9px}.nav-links{display:flex;gap:14px}.nav-link{color:#3ee0c2;text-decoration:none;font-size:13px;font-weight:700}.nav-link.short{color:#ff647c}.nav-link:hover{text-decoration:underline}.sector-overview{display:block;margin-top:14px;padding:24px;color:inherit;text-decoration:none;transition:.2s}.sector-overview:hover{border-color:#3ee0c2;transform:translateY(-2px)}.sector-overview-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:16px}.sector-overview-head span{color:#3ee0c2;font-size:13px;font-weight:800}.sector-overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.sector-side{background:#0a1727;border:1px solid var(--line);padding:16px;border-radius:14px}.sector-side h4{margin:0 0 10px}.sector-mini{display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}.sector-mini:last-child{border:0}.sector-mini small{color:var(--muted)}@media(max-width:650px){.sector-overview-grid{grid-template-columns:1fr}}</style>
 </head>
 <body>
   <main class="shell">
@@ -34,9 +34,13 @@
       <article class="panel chart-panel"><div class="panel-title"><div><p class="eyebrow">RISK HISTORY</p><h3>風險分數趨勢</h3></div></div><canvas id="riskChart"></canvas></article>
       <article class="panel flow-panel"><div class="panel-title"><div><p class="eyebrow">INSTITUTIONAL FLOW</p><h3>三大法人買賣超</h3></div><small>最新交易日／億元</small></div><div id="flows"></div></article>
     </section>
+    <a class="panel sector-overview" href="/dashboard/sectors.html">
+      <div class="sector-overview-head"><div><p class="eyebrow">SECTOR OVERVIEW</p><h3>產業族群強弱概覽</h3></div><span>查看完整族群分析 →</span></div>
+      <div class="sector-overview-grid"><div class="sector-side"><h4 style="color:#3ee0c2">最強勢族群</h4><div id="strongSectors" class="empty">讀取中</div></div><div class="sector-side"><h4 style="color:#ff647c">最弱勢族群</h4><div id="weakSectors" class="empty">讀取中</div></div></div>
+    </a>
     <footer>資料來源：臺灣證券交易所公開資訊 · 市場加權融資維持率為個股融資市值彙總推估，非證交所官方彙總值 · 本模型不構成投資建議</footer>
   </main>
   <div id="error" class="error" hidden></div>
-  <script src="/dashboard/app.js?v=11"></script>
+  <script src="/dashboard/app.js?v=12"></script>
 </body>
 </html>
