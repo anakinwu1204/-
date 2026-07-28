@@ -52,6 +52,10 @@ class ThemeScraperTest(unittest.TestCase):
         self.assertIn("9958", themes["鋼構工程"])
         self.assertIn("2607", themes["物流港口"])
         self.assertIn("1436", themes["建設開發"])
+        self.assertIn("1795", themes["學名藥製劑"])
+        self.assertIn("4160", themes["檢測基因"])
+        self.assertIn("6712", themes["再生細胞治療"])
+        self.assertIn("6469", themes["醫療通路"])
 
     def test_glass_quartz_and_ccl_subthemes(self):
         themes = complete_themes(FakeClient())
