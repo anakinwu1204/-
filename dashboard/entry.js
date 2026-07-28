@@ -17,5 +17,5 @@ function render(data){
  $('#conditions').innerHTML=items.map(([n,ok,v,d])=>`<article class="panel condition" style="--condition:${ok?'#3ee0c2':'#ff647c'}"><small>${ok?'已通過':'未通過'}</small><strong>${v}</strong><p>${n}<br>${d}</p></article>`).join('');
  $('#checklist').innerHTML=items.map(([n,ok,v])=>`<div class="check-row"><span class="check-icon" style="color:${ok?'#3ee0c2':'#ff647c'}">${ok?'✓':'×'}</span><span>${n}</span><span class="check-value">${v}</span></div>`).join('');
 }
-async function load(){try{const r=await fetch('/api/dashboard',{headers:{Accept:'application/json'}}),d=await r.json();if(!r.ok)throw Error(d.error||'資料讀取失敗');render(d)}catch(e){$('#error').hidden=false;$('#error').textContent=e.message}}
+async function load(attempt=1){try{const r=await fetch('/api/dashboard',{headers:{Accept:'application/json'},cache:'no-store'}),d=await r.json();if(!r.ok)throw Error(d.error||'資料讀取失敗');$('#error').hidden=true;render(d)}catch(e){if(attempt<4){setTimeout(()=>load(attempt+1),3000);return}$('#error').hidden=false;$('#error').textContent=`連線暫時失敗，請稍後重新整理：${e.message}`}}
 load();

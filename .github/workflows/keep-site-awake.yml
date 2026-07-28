@@ -1,0 +1,29 @@
+name: Keep dashboard available
+
+on:
+  schedule:
+    # Render 免費服務閒置後會休眠；每10分鐘檢查一次，降低冷啟動機率。
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/keep-site-awake.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: keep-dashboard-available
+  cancel-in-progress: true
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Wake and verify dashboard
+        run: >
+          curl --fail --silent --show-error
+          --retry 3 --retry-delay 10 --retry-all-errors
+          --connect-timeout 20 --max-time 90
+          https://taiwan-market-risk.onrender.com/healthz
