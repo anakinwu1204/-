@@ -33,6 +33,14 @@ class ThemeScraperTest(unittest.TestCase):
         self.assertIn("2404", themes["設備工程"])
         self.assertIn("6196", themes["設備工程"])
 
+    def test_electronics_are_split_by_primary_theme(self):
+        themes = complete_themes(FakeClient())
+        self.assertNotIn("2308", themes["機器人"])
+        self.assertIn("2308", themes["電源供應"])
+        self.assertIn("3665", themes["機器人"])
+        self.assertIn("2368", themes["PCB"])
+        self.assertIn("2375", themes["被動元件"])
+
 
 if __name__ == "__main__":
     unittest.main()
