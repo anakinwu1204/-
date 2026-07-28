@@ -36,23 +36,17 @@ const groupsByIndustry={
  '其他':['文化創意其他','農業科技其他','其他綜合','其他上市櫃']
 };
 let datasets={};
-function draw(data,{industry=null}={}){
- const sectors=data.sectors,top=sectors.slice(0,3),weak=sectors.slice(-3).reverse(),isTheme=Boolean(industry);
- $('#viewTitle').textContent=isTheme?`${industry}產業細分族群`:'證交所官方產業';
- $('#gridTitle').textContent=isTheme?`${industry}細分族群`:'全部官方產業';
- $('#gridHint').textContent=isTheme?'依市況調整後強弱分排序':'點擊卡片查看細分族群';
- $('#backToSectors').hidden=!isTheme;
- $('#asof').textContent=`資料截至 ${data.date} · ${data.count} 個${isTheme?'細分族群':'產業'}`;
- $('#headline').textContent=isTheme?`${industry}：${sectors.map(x=>x.sector).join('、')}`:`領先產業：${top.map(x=>x.sector).join('、')}`;
+function draw(data){
+ const sectors=data.sectors,top=sectors.slice(0,3),weak=sectors.slice(-3).reverse(),isTheme=true;
+ $('#viewTitle').textContent='細分族群盤勢';
+ $('#gridTitle').textContent='全部細分族群';
+ $('#gridHint').textContent='依市況調整後強弱分排序';
+ $('#backToSectors').hidden=true;
+ $('#asof').textContent=`資料截至 ${data.date} · ${data.count} 個細分族群`;
+ $('#headline').textContent=`領先族群：${top.map(x=>x.sector).join('、')}`;
  const market=data.market||{},marketText=`大盤風險 ${fmt(market.risk_score,1)}分、近3日 ${signed(market.return_3d_pct)}，族群相對分以 ${(Number(market.factor||1)*100).toFixed(0)}% 市況係數折減。`;
- $('#summary').textContent=sectors.length?`${marketText} 近5日相對大盤最強為${top[0].sector} ${signed(top[0].relative_5d_pct)}；大盤偏弱時，領先僅代表抗跌，不直接視為極強。`:`${industry}目前尚未設定細分族群。`;
+ $('#summary').textContent=sectors.length?`${marketText} 近5日相對大盤最強為${top[0].sector} ${signed(top[0].relative_5d_pct)}；大盤偏弱時，領先僅代表抗跌，不直接視為極強。`:'目前沒有可用的細分族群資料。';
  $('#leaders').innerHTML=top.map((x,i)=>`<article class="panel leader" style="--sector-color:${color(x.strength)}"><small>強勢排行 ${i+1} · ${fmt(x.strength,1)}分</small><strong>${x.sector}</strong><span>5日 ${signed(x.return_5d_pct)} · 相對大盤 ${signed(x.relative_5d_pct)}${x.members?` · ${x.members.join('、')}`:''}</span></article>`).join('');
  $('#sectorRows').innerHTML=sectors.map(x=>{const c=color(x.strength),children=groupsByIndustry[x.sector],clickable=!isTheme&&children,members=x.members?x.members.join('、'):clickable?children.join('、'):'證交所官方產業類股指數',stocks=isTheme&&x.member_details?`<div class="stock-grid">${x.member_details.map(s=>{const tone=s.daily_return_pct>=0?'#3ee0c2':'#ff647c';return `<div class="stock-box" style="--stock-color:${tone}"><strong>${s.code} ${s.name}</strong><div class="stock-price">${fmt(s.close,2)} 元</div><div class="stock-move">${s.change>0?'+':''}${fmt(s.change,2)} · ${signed(s.daily_return_pct)}</div></div>`}).join('')}</div>`:'',metric=(label,value)=>`<div class="metric"><small>${label}</small><b style="color:${Number(value)>=0?'#3ee0c2':'#ff647c'}">${signed(value)}</b></div>`;return `<article class="panel sector-card ${clickable?'clickable':''}" style="--card-color:${c}" ${clickable?`data-industry="${x.sector}"`:''}><div class="sector-card-head"><div><span class="tag" style="color:${c};background:${c}20">${x.state}</span><h4>${x.sector}</h4></div><div class="sector-score"><strong>${fmt(x.strength,1)}</strong><small>強弱分</small></div></div><div class="metric-grid">${metric('當日',x.daily_return_pct)}${metric('近5日',x.return_5d_pct)}${metric('相對大盤5日',x.relative_5d_pct)}${metric('相對大盤20日',x.relative_20d_pct)}</div><div class="member-list">${isTheme?'個股當日表現':`細分內容：${members}`}${x.breadth_pct==null?'':`<br>上漲家數：${fmt(x.breadth_pct,1)}%`}${stocks}</div>${clickable?'<div class="drill-hint">查看細分族群 →</div>':''}</article>`}).join('');
- document.querySelectorAll('[data-industry]').forEach(el=>el.addEventListener('click',()=>openIndustry(el.dataset.industry)));
 }
-function openIndustry(industry){
- const names=groupsByIndustry[industry]||[],items=datasets.themes.sectors.filter(x=>names.includes(x.sector));
- draw({...datasets.themes,sectors:items,count:items.length},{industry});
-}
-$('#backToSectors').addEventListener('click',()=>draw(datasets.sectors));
-async function load(attempt=1){try{const [tr,sr]=await Promise.all(['/api/themes','/api/sectors'].map(url=>fetch(url,{headers:{Accept:'application/json'},cache:'no-store'})));datasets={themes:await tr.json(),sectors:await sr.json()};if(!tr.ok||!sr.ok)throw Error('資料讀取失敗');draw(datasets.sectors)}catch(e){if(attempt<4){setTimeout(()=>load(attempt+1),3000);return}$('#error').hidden=false;$('#error').textContent=`產業資料暫時無法讀取：${e.message}`}}load();
+async function load(attempt=1){try{const r=await fetch('/api/themes',{headers:{Accept:'application/json'},cache:'no-store'}),data=await r.json();if(!r.ok)throw Error(data.error||'資料讀取失敗');datasets={themes:data};draw(data)}catch(e){if(attempt<4){setTimeout(()=>load(attempt+1),3000);return}$('#error').hidden=false;$('#error').textContent=`族群資料暫時無法讀取：${e.message}`}}load();
