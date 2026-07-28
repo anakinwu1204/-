@@ -16,6 +16,7 @@ from urllib.parse import urlparse
 
 from risk_score import calculate, load_csv
 from sector_scraper import scrape as scrape_sectors
+from theme_scraper import scrape as scrape_themes
 from twse_scraper import scrape
 
 
@@ -119,6 +120,60 @@ def sector_data(csv_path: Path, market_path: Path) -> dict:
             "sectors": results, "count": len(results)}
 
 
+def theme_data(csv_path: Path, market_path: Path) -> dict:
+    with csv_path.open(encoding="utf-8-sig", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    market = load_csv(market_path)
+    market_close = {str(row["date"]): float(row["close"]) for row in market}
+    grouped: dict[str, dict[str, list[dict]]] = {}
+    for row in rows:
+        grouped.setdefault(row["theme"], {}).setdefault(row["code"], []).append({
+            "date": row["date"], "name": row["name"], "close": float(row["close"])})
+    results = []
+    for theme, members in grouped.items():
+        returns = {1: [], 5: [], 20: []}
+        names, up = [], 0
+        latest_date = None
+        for history in members.values():
+            history.sort(key=lambda item: item["date"])
+            if len(history) < 21:
+                continue
+            latest_date = history[-1]["date"]
+            names.append(history[-1]["name"])
+            for horizon in returns:
+                returns[horizon].append(
+                    (history[-1]["close"] / history[-horizon - 1]["close"] - 1) * 100)
+            up += returns[1][-1] > 0
+        if not names or latest_date is None:
+            continue
+        dates = sorted({row["date"] for history in members.values() for row in history})
+        if len(dates) < 21:
+            continue
+        m0, m1, m5, m20 = (market_close[dates[-1]], market_close[dates[-2]],
+                            market_close[dates[-6]], market_close[dates[-21]])
+        r1, r5, r20 = (fmean(returns[1]), fmean(returns[5]), fmean(returns[20]))
+        rel1 = r1 - (m0 / m1 - 1) * 100
+        rel5 = r5 - (m0 / m5 - 1) * 100
+        rel20 = r20 - (m0 / m20 - 1) * 100
+        strength = max(0, min(100, 50 + rel1 * 2 + rel5 * 5 + rel20))
+        state = ("轉強" if rel5 > 0 >= rel20 else
+                 "轉弱" if rel5 < 0 <= rel20 else
+                 "強勢" if strength >= 60 else "弱勢" if strength < 40 else "中性")
+        results.append({
+            "sector": theme, "date": latest_date, "daily_return_pct": round(r1, 2),
+            "return_5d_pct": round(r5, 2), "return_20d_pct": round(r20, 2),
+            "relative_daily_pct": round(rel1, 2),
+            "relative_5d_pct": round(rel5, 2),
+            "relative_20d_pct": round(rel20, 2),
+            "strength": round(strength, 1), "state": state,
+            "breadth_pct": round(up / len(names) * 100, 1),
+            "members": names,
+        })
+    results.sort(key=lambda item: item["strength"], reverse=True)
+    return {"date": results[0]["date"] if results else None,
+            "sectors": results, "count": len(results)}
+
+
 class Handler(SimpleHTTPRequestHandler):
     csv_path = ROOT / "market.csv"
 
@@ -158,6 +213,23 @@ class Handler(SimpleHTTPRequestHandler):
         if request_path == "/api/sectors":
             try:
                 body = json.dumps(sector_data(ROOT / "sectors.csv", self.csv_path),
+                                  ensure_ascii=False).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            except Exception as exc:
+                body = json.dumps({"error": str(exc)}, ensure_ascii=False).encode()
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            return
+        if request_path == "/api/themes":
+            try:
+                body = json.dumps(theme_data(ROOT / "themes.csv", self.csv_path),
                                   ensure_ascii=False).encode()
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -215,6 +287,8 @@ def main() -> None:
                            delay=args.refresh_delay, limit=args.refresh_limit)
                     scrape_sectors(Handler.csv_path, ROOT / "sectors.csv", 45,
                                    args.refresh_delay)
+                    scrape_themes(Handler.csv_path, ROOT / "themes.csv", 45,
+                                  args.refresh_delay)
                     print("[refresh] 資料更新完成")
                 except Exception as exc:
                     print(f"[refresh] 更新失敗：{exc}")

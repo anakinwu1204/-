@@ -3,7 +3,7 @@ services:
     name: taiwan-market-risk
     runtime: python
     plan: free
-    buildCommand: python3 -m py_compile dashboard_server.py risk_score.py twse_scraper.py sector_scraper.py
+    buildCommand: python3 -m py_compile dashboard_server.py risk_score.py twse_scraper.py sector_scraper.py theme_scraper.py
     startCommand: python3 -u dashboard_server.py
     healthCheckPath: /healthz
     envVars:

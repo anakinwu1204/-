@@ -17,13 +17,15 @@
     .tag{display:inline-block;padding:4px 9px;border-radius:999px;font-size:11px;font-weight:800}
     .meter{width:90px;height:6px;background:#26374d;border-radius:9px;overflow:hidden;display:inline-block}
     .meter i{display:block;height:100%;background:var(--meter);width:var(--width)}
+    .tabs{display:flex;gap:8px;margin:0 0 14px}.tab{border:1px solid var(--line);background:#0e1b2d;color:var(--muted);padding:9px 14px;border-radius:999px;cursor:pointer;font-weight:700}.tab.active{color:#08111f;background:var(--teal);border-color:var(--teal)}
     @media(max-width:700px){.leaders{grid-template-columns:1fr}.shell{width:calc(100% - 20px)}}
   </style>
 </head>
 <body><main class="shell">
   <header><div><p class="eyebrow">SECTOR ROTATION</p><h1>產業族群盤勢分析</h1></div><a class="back" href="/">← 返回風險儀表板</a></header>
   <section class="panel sector-summary"><h2 id="headline">讀取產業資料</h2><p id="summary">比較各產業類股指數5日／20日動能，以及相對加權指數的強弱。</p><div class="asof" id="asof">--</div></section>
+  <div class="tabs"><button class="tab active" data-view="themes">細分題材族群</button><button class="tab" data-view="sectors">證交所產業</button></div>
   <section class="leaders" id="leaders"></section>
-  <section class="panel table-panel"><table><thead><tr><th>產業</th><th>狀態</th><th>當日</th><th>5日</th><th>20日</th><th>相對大盤5日</th><th>相對大盤20日</th><th>強弱分</th></tr></thead><tbody id="sectorRows"></tbody></table></section>
+  <section class="panel table-panel"><table><thead><tr><th>族群／產業</th><th>狀態</th><th>當日</th><th>5日</th><th>20日</th><th>相對大盤5日</th><th>相對大盤20日</th><th>上漲家數</th><th>強弱分</th></tr></thead><tbody id="sectorRows"></tbody></table></section>
   <footer>資料來源：臺灣證券交易所產業類股指數 · 強弱分為相對動能指標，不構成投資建議</footer>
-</main><div id="error" class="error" hidden></div><script src="/dashboard/sectors.js?v=1"></script></body></html>
+</main><div id="error" class="error" hidden></div><script src="/dashboard/sectors.js?v=2"></script></body></html>

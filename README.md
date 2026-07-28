@@ -38,6 +38,8 @@ python3 -m unittest -v
 
 產業族群頁位於`/dashboard/sectors.html`，使用證交所33個產業類股價格指數，比較當日、5日、20日報酬及相對加權指數強弱。強弱分以當日20%、5日50%、20日30%的相對動能概念加權，並標示強勢、轉強、中性、轉弱與弱勢；這是輪動觀察，不代表產業基本面評價。
 
+同頁另有細分題材分頁，包含PCB、ABF載板、散熱、記憶體、CCL銅箔基板、AI伺服器、半導體設備、IC設計、光通訊、網通、重電與機器人。各族群採上市代表股等權報酬，並顯示上漲家數比例與成分股；目前資料來源僅涵蓋證交所上市股票，不含上櫃代表股。
+
 ### 環境變數
 
 部署環境可設定 `HOST`、`PORT`、`CSV_PATH`、`AUTO_REFRESH_MINUTES`、`TWSE_REFRESH_MONTHS`、`TWSE_REFRESH_LIMIT` 與 `TWSE_REQUEST_DELAY`。命令列參數優先於環境變數；設定範例見 `.env.example`。本機可執行 `set -a; source .env; set +a; python3 dashboard_server.py`。`.env` 已排除於版本控制，請勿把密鑰提交到 repository。TWSE 目前使用的公開資料端點不需要 API key。
