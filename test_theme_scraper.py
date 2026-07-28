@@ -79,9 +79,12 @@ class ThemeScraperTest(unittest.TestCase):
         self.assertIn("3357", themes["被動元件"])
         self.assertIn("3689", themes["連接器線材"])
         self.assertNotIn("3130", themes["電子檢測"])
-        self.assertIn("5274", themes["IC設計"])
+        self.assertIn("5274", themes["ASIC與矽智財"])
         self.assertIn("6147", themes["封裝測試"])
         self.assertIn("3105", themes["化合物半導體"])
+        self.assertIn("3034", themes["顯示驅動IC"])
+        self.assertIn("6415", themes["電源管理IC"])
+        self.assertIn("2454", themes["網通射頻IC"])
 
     def test_all_tpex_companies_are_added_to_industry_fallback(self):
         class Client(FakeClient):
