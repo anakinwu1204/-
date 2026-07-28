@@ -147,11 +147,12 @@ def theme_data(csv_path: Path, market_path: Path) -> dict:
     grouped: dict[str, dict[str, list[dict]]] = {}
     for row in rows:
         grouped.setdefault(row["theme"], {}).setdefault(row["code"], []).append({
-            "date": row["date"], "name": row["name"], "close": float(row["close"])})
+            "date": row["date"], "name": row["name"], "close": float(row["close"]),
+            "market_cap": float(row.get("market_cap") or 0)})
     results = []
     for theme, members in grouped.items():
         returns = {1: [], 5: [], 20: []}
-        names, member_details, up = [], [], 0
+        names, member_details, up, market_cap = [], [], 0, 0.0
         latest_date = None
         for code, history in members.items():
             history.sort(key=lambda item: item["date"])
@@ -159,6 +160,7 @@ def theme_data(csv_path: Path, market_path: Path) -> dict:
                 continue
             latest_date = history[-1]["date"]
             names.append(history[-1]["name"])
+            market_cap += history[-1]["market_cap"]
             daily_change = history[-1]["close"] - history[-2]["close"]
             daily_pct = daily_change / history[-2]["close"] * 100
             member_details.append({
@@ -196,9 +198,10 @@ def theme_data(csv_path: Path, market_path: Path) -> dict:
             "strength": round(strength, 1), "state": state,
             "relative_strength": round(relative_strength, 1),
             "breadth_pct": round(up / len(names) * 100, 1),
+            "market_cap": round(market_cap),
             "members": names, "member_details": member_details,
         })
-    results.sort(key=lambda item: item["strength"], reverse=True)
+    results.sort(key=lambda item: item["market_cap"], reverse=True)
     return {"date": results[0]["date"] if results else None,
             "sectors": results, "count": len(results),
             "market": {key: round(value, 2) for key, value in regime.items()}}

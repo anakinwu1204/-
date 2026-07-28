@@ -178,7 +178,7 @@ THEMES = {
     "居家生活": ["2908", "8464", "9934"],
     "其他綜合": ["9907", "9911", "9924", "9933"],
 }
-TAXONOMY_VERSION = "2026-07-28.9"
+TAXONOMY_VERSION = "2026-07-28.10"
 
 INDUSTRY_NAMES = {
     "01": "水泥", "02": "食品", "03": "塑膠", "04": "紡織纖維",
@@ -206,6 +206,7 @@ def complete_themes(client: TwseClient) -> dict[str, list[str]]:
     tpex_profiles = (client.get_tpex_profiles()
                      if hasattr(client, "get_tpex_profiles")
                      else tpex_company_profiles(delay=client.delay))
+    setattr(client, "_tpex_company_profiles", tpex_profiles)
     profiles.extend(
         (str(item.get("SecuritiesCompanyCode", "")).strip(),
          str(item.get("SecuritiesIndustryCode", "")).strip())
@@ -219,6 +220,21 @@ def complete_themes(client: TwseClient) -> dict[str, list[str]]:
                     else f"{industry_name}其他")
         themes.setdefault(fallback, []).append(code)
     return themes
+
+
+def company_issued_shares(client: TwseClient) -> dict[str, float]:
+    shares = {}
+    for item in client.get_openapi("/opendata/t187ap03_L"):
+        code = str(item.get("公司代號", "")).strip()
+        shares[code] = number(
+            str(item.get("已發行普通股數或TDR原股發行股數", "0")))
+    tpex_profiles = getattr(client, "_tpex_company_profiles", None)
+    if tpex_profiles is None:
+        tpex_profiles = tpex_company_profiles(delay=client.delay)
+    for item in tpex_profiles:
+        code = str(item.get("SecuritiesCompanyCode", "")).strip()
+        shares[code] = number(str(item.get("IssueShares", "0")))
+    return shares
 
 
 def tpex_company_profiles(delay: float = 0.0) -> list[dict]:
@@ -324,6 +340,7 @@ def scrape(market_path: Path, output: Path, limit: int, delay: float) -> int:
                 cached[(row["date"], row["theme"], row["code"])] = row
     client, wanted_dates = TwseClient(delay=delay), dates(market_path, limit)
     themes = complete_themes(client)
+    issued_shares = company_issued_shares(client)
     for day in wanted_dates:
         cached_themes = {key[1] for key in cached if key[0] == day}
         current_taxonomy = any(
@@ -340,6 +357,7 @@ def scrape(market_path: Path, output: Path, limit: int, delay: float) -> int:
                     cached[(day, theme, code)] = {
                         "date": day, "theme": theme, "code": code,
                         "name": stocks[code]["name"], "close": stocks[code]["close"],
+                        "market_cap": stocks[code]["close"] * issued_shares.get(code, 0),
                         "taxonomy_version": TAXONOMY_VERSION}
             print(f"已取得題材族群：{day}")
         except NoDataError:
@@ -352,7 +370,8 @@ def scrape(market_path: Path, output: Path, limit: int, delay: float) -> int:
     temporary = output.with_suffix(output.suffix + ".tmp")
     with temporary.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=[
-            "date", "theme", "code", "name", "close", "taxonomy_version"])
+            "date", "theme", "code", "name", "close", "market_cap",
+            "taxonomy_version"])
         writer.writeheader()
         writer.writerows(rows)
     temporary.replace(output)
