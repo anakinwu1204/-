@@ -2,9 +2,10 @@ name: Update TWSE market data
 
 on:
   schedule:
-    # 融資融券資料約21:00產生；21:10先更新，21:40、22:10分兩次補抓。
+    # 19:10起逐時嘗試更新；融資融券資料約21:00產生，最晚22:10補抓。
+    - cron: "10 11 * * 1-5"
+    - cron: "10 12 * * 1-5"
     - cron: "10 13 * * 1-5"
-    - cron: "40 13 * * 1-5"
     - cron: "10 14 * * 1-5"
   workflow_dispatch:
   push:
