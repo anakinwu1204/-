@@ -36,6 +36,8 @@ python3 -m unittest -v
 
 做多與做空已拆成獨立頁面：`/dashboard/entry.html` 與 `/dashboard/short.html`。做空監控條件為總風險至少50分、指數跌破季線、季線斜率為負、三大法人合計賣超。分數門檻已隨整體加10分同步平移，以維持原本訊號邏輯；1,500日資料中四條件全期三日做空勝率50.81%，尚不足以宣稱為已驗證的進場訊號。正式啟用前仍需納入融券或反向ETF成本。
 
+產業族群頁位於`/dashboard/sectors.html`，使用證交所33個產業類股價格指數，比較當日、5日、20日報酬及相對加權指數強弱。強弱分以當日20%、5日50%、20日30%的相對動能概念加權，並標示強勢、轉強、中性、轉弱與弱勢；這是輪動觀察，不代表產業基本面評價。
+
 ### 環境變數
 
 部署環境可設定 `HOST`、`PORT`、`CSV_PATH`、`AUTO_REFRESH_MINUTES`、`TWSE_REFRESH_MONTHS`、`TWSE_REFRESH_LIMIT` 與 `TWSE_REQUEST_DELAY`。命令列參數優先於環境變數；設定範例見 `.env.example`。本機可執行 `set -a; source .env; set +a; python3 dashboard_server.py`。`.env` 已排除於版本控制，請勿把密鑰提交到 repository。TWSE 目前使用的公開資料端點不需要 API key。

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import os
 import threading
@@ -14,6 +15,7 @@ from statistics import fmean
 from urllib.parse import urlparse
 
 from risk_score import calculate, load_csv
+from sector_scraper import scrape as scrape_sectors
 from twse_scraper import scrape
 
 
@@ -64,6 +66,59 @@ def dashboard_data(csv_path: Path) -> dict:
             "row_count": len(rows), "source": csv_path.name}
 
 
+def sector_data(csv_path: Path, market_path: Path) -> dict:
+    with csv_path.open(encoding="utf-8-sig", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    market = load_csv(market_path)
+    market_close = {str(row["date"]): float(row["close"]) for row in market}
+    by_sector: dict[str, list[dict]] = {}
+    for row in rows:
+        by_sector.setdefault(row["sector"], []).append({
+            "date": row["date"], "close": float(row["close"]),
+            "daily_return_pct": float(row["daily_return_pct"])})
+    results = []
+    for name, history in by_sector.items():
+        history.sort(key=lambda item: item["date"])
+        if len(history) < 21:
+            continue
+        latest = history[-1]
+        r5 = (latest["close"] / history[-6]["close"] - 1) * 100
+        r20 = (latest["close"] / history[-21]["close"] - 1) * 100
+        dates = [item["date"] for item in history]
+        m0, m5, m20 = (market_close.get(dates[-1]), market_close.get(dates[-6]),
+                        market_close.get(dates[-21]))
+        if not all((m0, m5, m20)):
+            continue
+        market_daily = (m0 / market_close[dates[-2]] - 1) * 100
+        rel1 = latest["daily_return_pct"] - market_daily
+        rel5 = r5 - (m0 / m5 - 1) * 100
+        rel20 = r20 - (m0 / m20 - 1) * 100
+        # 短線輪動優先：當日20%、5日50%、20日30%，避免舊漲幅掩蓋轉弱。
+        strength = max(0, min(100, 50 + rel1 * 2 + rel5 * 5 + rel20))
+        if rel5 > 0 >= rel20:
+            state = "轉強"
+        elif rel5 < 0 <= rel20:
+            state = "轉弱"
+        elif strength >= 60:
+            state = "強勢"
+        elif strength < 40:
+            state = "弱勢"
+        else:
+            state = "中性"
+        results.append({
+            "sector": name, "date": latest["date"],
+            "daily_return_pct": round(latest["daily_return_pct"], 2),
+            "return_5d_pct": round(r5, 2), "return_20d_pct": round(r20, 2),
+            "relative_5d_pct": round(rel5, 2),
+            "relative_20d_pct": round(rel20, 2),
+            "relative_daily_pct": round(rel1, 2),
+            "strength": round(strength, 1), "state": state,
+        })
+    results.sort(key=lambda item: item["strength"], reverse=True)
+    return {"date": results[0]["date"] if results else None,
+            "sectors": results, "count": len(results)}
+
+
 class Handler(SimpleHTTPRequestHandler):
     csv_path = ROOT / "market.csv"
 
@@ -87,6 +142,23 @@ class Handler(SimpleHTTPRequestHandler):
         if request_path == "/api/dashboard":
             try:
                 body = json.dumps(dashboard_data(self.csv_path), ensure_ascii=False).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            except Exception as exc:
+                body = json.dumps({"error": str(exc)}, ensure_ascii=False).encode()
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            return
+        if request_path == "/api/sectors":
+            try:
+                body = json.dumps(sector_data(ROOT / "sectors.csv", self.csv_path),
+                                  ensure_ascii=False).encode()
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json; charset=utf-8")
                 self.send_header("Content-Length", str(len(body)))
@@ -141,6 +213,8 @@ def main() -> None:
                     scrape(Handler.csv_path, months=args.refresh_months,
                            end=__import__("datetime").date.today(),
                            delay=args.refresh_delay, limit=args.refresh_limit)
+                    scrape_sectors(Handler.csv_path, ROOT / "sectors.csv", 45,
+                                   args.refresh_delay)
                     print("[refresh] 資料更新完成")
                 except Exception as exc:
                     print(f"[refresh] 更新失敗：{exc}")

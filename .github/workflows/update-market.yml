@@ -35,14 +35,17 @@ jobs:
       - name: Fetch latest TWSE data
         run: python3 twse_scraper.py --months 8 --limit 140 --delay 0.25 --output market.csv
 
+      - name: Fetch industry index data
+        run: python3 sector_scraper.py --market market.csv --limit 45 --delay 0.2 --output sectors.csv
+
       - name: Commit updated data
         run: |
-          if git diff --quiet -- market.csv; then
+          if git diff --quiet -- market.csv sectors.csv; then
             echo "No new complete trading-day data."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add market.csv
+          git add market.csv sectors.csv
           git commit -m "Update TWSE market data"
           git push

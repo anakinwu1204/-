@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>台股產業族群盤勢</title>
+  <link rel="stylesheet" href="/dashboard/style.css?v=2">
+  <style>
+    .back{color:var(--teal);text-decoration:none;font-size:13px;font-weight:700}
+    .sector-summary{padding:26px;margin-bottom:14px}.sector-summary p{color:var(--muted);line-height:1.7}
+    .leaders{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+    .leader{padding:20px;border-top:3px solid var(--sector-color)}.leader small{color:var(--muted)}
+    .leader strong{display:block;font-size:24px;margin:8px 0}.leader span{font-size:12px;color:var(--muted)}
+    .table-panel{padding:22px;overflow:auto}table{width:100%;border-collapse:collapse;min-width:780px}
+    th,td{text-align:right;padding:13px 10px;border-bottom:1px solid var(--line);font-size:13px}
+    th:first-child,td:first-child{text-align:left}th{color:var(--muted);font-size:11px}
+    .tag{display:inline-block;padding:4px 9px;border-radius:999px;font-size:11px;font-weight:800}
+    .meter{width:90px;height:6px;background:#26374d;border-radius:9px;overflow:hidden;display:inline-block}
+    .meter i{display:block;height:100%;background:var(--meter);width:var(--width)}
+    @media(max-width:700px){.leaders{grid-template-columns:1fr}.shell{width:calc(100% - 20px)}}
+  </style>
+</head>
+<body><main class="shell">
+  <header><div><p class="eyebrow">SECTOR ROTATION</p><h1>產業族群盤勢分析</h1></div><a class="back" href="/">← 返回風險儀表板</a></header>
+  <section class="panel sector-summary"><h2 id="headline">讀取產業資料</h2><p id="summary">比較各產業類股指數5日／20日動能，以及相對加權指數的強弱。</p><div class="asof" id="asof">--</div></section>
+  <section class="leaders" id="leaders"></section>
+  <section class="panel table-panel"><table><thead><tr><th>產業</th><th>狀態</th><th>當日</th><th>5日</th><th>20日</th><th>相對大盤5日</th><th>相對大盤20日</th><th>強弱分</th></tr></thead><tbody id="sectorRows"></tbody></table></section>
+  <footer>資料來源：臺灣證券交易所產業類股指數 · 強弱分為相對動能指標，不構成投資建議</footer>
+</main><div id="error" class="error" hidden></div><script src="/dashboard/sectors.js?v=1"></script></body></html>
