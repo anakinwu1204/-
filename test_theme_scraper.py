@@ -60,6 +60,7 @@ class ThemeScraperTest(unittest.TestCase):
         self.assertIn("1802", themes["玻纖布"])
         self.assertIn("2409", themes["TGV玻璃基板"])
         self.assertIn("6274", themes["CCL銅箔基板"])
+        self.assertIn("3081", themes["光通訊"])
 
     def test_tpex_daily_price_parser(self):
         payload = {"tables": [{"fields": ["代號", "名稱", "收盤 "],
