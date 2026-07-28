@@ -11,15 +11,17 @@ from statistics import fmean, median
 from risk_score import calculate, load_csv
 
 
-def signal_flags(score) -> dict[str, bool]:
+def signal_flags(score, close: float, previous_five_low: float) -> dict[str, bool]:
     m = score.metrics
     above = m["distance_ma60_pct"] > 0
     rising = m["ma60_slope_20d_pct"] > 0
+    not_broken = close >= previous_five_low
     return {
-        "strong": score.total <= 30,
-        "ready": score.total <= 35 and above and rising,
-        "pullback": (score.total <= 45 and above and rising
-                     and -5 <= m["return_20d_pct"] <= 8),
+        "strong": score.total <= 30 and not_broken,
+        "ready": score.total <= 40 and above and rising and not_broken,
+        "pullback": (score.total <= 40 and above and rising and not_broken
+                     and -5 <= m["return_20d_pct"] <= 8
+                     and m["daily_return_pct"] <= 0),
     }
 
 
@@ -45,7 +47,7 @@ def run(rows: list[dict[str, float | str]], holding_days: int = 10) -> dict:
     exit_offset = holding_days + 1
     for i in range(119, len(rows) - exit_offset):
         score = calculate(rows[:i + 1])
-        flags = signal_flags(score)
+        flags = signal_flags(score, closes[i], min(closes[i - 5:i]))
         if not any(flags.values()):
             continue
         path = closes[i + 1:i + exit_offset + 1]
