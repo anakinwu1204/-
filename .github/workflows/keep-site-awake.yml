@@ -2,8 +2,8 @@ name: Keep dashboard available
 
 on:
   schedule:
-    # Render 免費服務閒置後會休眠；每10分鐘檢查一次，降低冷啟動機率。
-    - cron: "*/10 * * * *"
+    # 避開整點尖峰，每15分鐘檢查一次，降低免費主機冷啟動機率。
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
   push:
     paths:
