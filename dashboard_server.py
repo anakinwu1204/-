@@ -53,7 +53,7 @@ def dashboard_data(csv_path: Path) -> dict:
             "ma60": round(fmean(closes[i - 59:i + 1]), 2) if i >= 59 else None,
             "ma120": round(fmean(closes[i - 119:i + 1]), 2) if i >= 119 else None,
             "score": score_by_date.get(str(row["date"])),
-            "volume": float(row["volume"]),
+            "volume": float(row["turnover_value"]),
         })
     latest_row = rows[-1]
     institutions = {

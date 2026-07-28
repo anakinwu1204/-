@@ -102,6 +102,7 @@ class RiskScoreTest(unittest.TestCase):
         self.assertIn("volume_ratio_5d", result.metrics)
         self.assertIn("volume_ratio_previous_day", result.metrics)
         self.assertIn("volume", result.metrics)
+        self.assertIn("turnover_value", result.metrics)
         self.assertIn("margin_speed_score", result.metrics)
         self.assertIn("institutional_strength_5d_z", result.metrics)
         self.assertIn("institutional_strength_20d_z", result.metrics)

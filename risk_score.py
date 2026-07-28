@@ -322,7 +322,8 @@ def calculate(rows: list[dict[str, float | str]]) -> Score:
     i = len(rows) - 1
     row = rows[i]
     closes = [float(r["close"]) for r in rows]
-    volumes = [float(r["volume"]) for r in rows]
+    share_volumes = [float(r["volume"]) for r in rows]
+    turnover_values = [float(r["turnover_value"]) for r in rows]
     margins = [float(r["margin_balance"]) for r in rows]
     close = closes[i]
     ma20, ma60, ma120 = fmean(closes[-20:]), fmean(closes[-60:]), fmean(closes[-120:])
@@ -330,11 +331,14 @@ def calculate(rows: list[dict[str, float | str]]) -> Score:
     ma60_slope_20d = pct_change(ma60, prior_ma60)
     return_20d = pct_change(close, closes[i - 20])
     drawdown_60d = pct_change(close, max(closes[-60:]))
-    avg_volume5, avg_volume20 = fmean(volumes[-5:]), fmean(volumes[-20:])
-    volume_ratio5 = volumes[i] / avg_volume5 if avg_volume5 else 0
-    volume_ratio_previous_day = volumes[i] / volumes[i - 1] if volumes[i - 1] else 0
-    volume_ratio = volumes[i] / avg_volume20 if avg_volume20 else 0
-    volume_cv20 = pstdev(volumes[-20:]) / avg_volume20 if avg_volume20 else 0
+    avg_turnover5, avg_turnover20 = (fmean(turnover_values[-5:]),
+                                    fmean(turnover_values[-20:]))
+    volume_ratio5 = turnover_values[i] / avg_turnover5 if avg_turnover5 else 0
+    volume_ratio_previous_day = (turnover_values[i] / turnover_values[i - 1]
+                                 if turnover_values[i - 1] else 0)
+    volume_ratio = turnover_values[i] / avg_turnover20 if avg_turnover20 else 0
+    volume_cv20 = (pstdev(turnover_values[-20:]) / avg_turnover20
+                   if avg_turnover20 else 0)
     daily_return = pct_change(close, closes[i - 1])
     return_3d = pct_change(close, closes[i - 3])
     decline_streak = 0
@@ -444,7 +448,9 @@ def calculate(rows: list[dict[str, float | str]]) -> Score:
     total = fmean(scores.values())
     metrics = {"close": close, "ma20": ma20, "ma60": ma60, "ma120": ma120,
                "distance_ma60_pct": distance_ma60,
-               "volume": volumes[i], "avg_volume_5d": avg_volume5,
+               "volume": share_volumes[i],
+               "turnover_value": turnover_values[i],
+               "avg_turnover_value_5d": avg_turnover5,
                "volume_ratio_previous_day": volume_ratio_previous_day,
                "volume_ratio_5d": volume_ratio5, "volume_ratio_20d": volume_ratio,
                "volume_cv_20d": volume_cv20,
