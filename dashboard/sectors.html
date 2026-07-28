@@ -17,7 +17,7 @@
     .sector-card-head{display:flex;justify-content:space-between;gap:10px;align-items:start}.sector-card h4{font-size:19px;margin:0}.sector-score{text-align:right}.sector-score strong{display:block;font-size:26px;color:var(--card-color)}.sector-score small{color:var(--muted)}
     .metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:15px 0}.metric{background:#0a1727;border:1px solid var(--line);padding:10px;border-radius:10px}.metric small{display:block;color:var(--muted);font-size:10px}.metric b{display:block;margin-top:4px;font-size:14px}
     .member-list{color:var(--muted);font-size:11px;line-height:1.55;min-height:34px}.drill-hint{color:var(--teal);font-size:11px;font-weight:800;margin-top:8px}
-    .stock-table-wrap{margin-top:10px;overflow-x:auto;border:1px solid var(--line);border-radius:10px}.stock-table{width:100%;border-collapse:collapse;min-width:340px;background:#091525}.stock-table th,.stock-table td{padding:8px;text-align:right;border-bottom:1px solid var(--line);font-size:11px;white-space:nowrap}.stock-table th{color:var(--muted);font-size:10px;font-weight:600}.stock-table th:first-child,.stock-table td:first-child{text-align:left}.stock-table tr:last-child td{border-bottom:0}.stock-table td:first-child{color:#dce8f7;font-weight:700}
+    .stock-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}.stock-box{background:#091525;border:1px solid var(--line);border-left:3px solid var(--stock-color);border-radius:10px;padding:10px;min-width:0}.stock-box strong{display:block;color:#dce8f7;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stock-box .stock-price{font-size:16px;font-weight:800;margin:7px 0 3px;color:#eef5ff}.stock-box .stock-move{font-size:11px;font-weight:800;color:var(--stock-color)}
     .tag{display:inline-block;padding:4px 9px;border-radius:999px;font-size:11px;font-weight:800}
     .meter{width:90px;height:6px;background:#26374d;border-radius:9px;overflow:hidden;display:inline-block}
     .meter i{display:block;height:100%;background:var(--meter);width:var(--width)}
@@ -34,4 +34,4 @@
   <div class="grid-title"><h3 id="gridTitle">全部產業</h3><small id="gridHint">點擊卡片查看細分族群</small></div>
   <section class="sector-grid" id="sectorRows"></section>
   <footer>資料來源：臺灣證券交易所產業類股指數 · 強弱分為相對動能指標，不構成投資建議</footer>
-</main><div id="error" class="error" hidden></div><script src="/dashboard/sectors.js?v=11"></script></body></html>
+</main><div id="error" class="error" hidden></div><script src="/dashboard/sectors.js?v=12"></script></body></html>
