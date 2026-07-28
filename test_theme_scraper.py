@@ -7,6 +7,7 @@ class FakeClient:
     def get_openapi(self, _path):
         return [
             {"公司代號": "2330", "產業別": "24"},
+            {"公司代號": "2302", "產業別": "24"},
             {"公司代號": "1101", "產業別": "01"},
             {"公司代號": "9105", "產業別": "91"},
             {"公司代號": "12AB", "產業別": "02"},
@@ -16,7 +17,7 @@ class FakeClient:
 class ThemeScraperTest(unittest.TestCase):
     def test_unmapped_stocks_are_added_to_industry_fallback(self):
         themes = complete_themes(FakeClient())
-        self.assertIn("2330", themes["半導體其他"])
+        self.assertIn("2302", themes["半導體其他"])
         self.assertIn("9105", themes["其他上市"])
 
     def test_curated_stock_is_not_duplicated_in_fallback(self):
@@ -40,6 +41,14 @@ class ThemeScraperTest(unittest.TestCase):
         self.assertIn("3665", themes["機器人"])
         self.assertIn("2368", themes["PCB"])
         self.assertIn("2375", themes["被動元件"])
+
+    def test_non_electronics_are_split_into_subthemes(self):
+        themes = complete_themes(FakeClient())
+        self.assertIn("2330", themes["晶圓代工"])
+        self.assertIn("6446", themes["生物新藥"])
+        self.assertIn("9958", themes["鋼構工程"])
+        self.assertIn("2607", themes["物流港口"])
+        self.assertIn("1436", themes["建設開發"])
 
 
 if __name__ == "__main__":
