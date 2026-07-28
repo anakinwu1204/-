@@ -39,6 +39,8 @@ let datasets={};
 function draw(data,{industry=null}={}){
  const sectors=data.sectors,top=sectors.slice(0,3),weak=sectors.slice(-3).reverse(),isTheme=Boolean(industry);
  $('#viewTitle').textContent=isTheme?`${industry}產業細分族群`:'證交所官方產業';
+ $('#gridTitle').textContent=isTheme?`${industry}細分族群`:'全部官方產業';
+ $('#gridHint').textContent=isTheme?'依市況調整後強弱分排序':'點擊卡片查看細分族群';
  $('#backToSectors').hidden=!isTheme;
  $('#asof').textContent=`資料截至 ${data.date} · ${data.count} 個${isTheme?'細分族群':'產業'}`;
  $('#headline').textContent=isTheme?`${industry}：${sectors.map(x=>x.sector).join('、')}`:`領先產業：${top.map(x=>x.sector).join('、')}`;
