@@ -63,12 +63,42 @@ THEMES = {
     "其他綜合": ["9907", "9911", "9924", "9933"],
 }
 
+INDUSTRY_NAMES = {
+    "01": "水泥", "02": "食品", "03": "塑膠", "04": "紡織纖維",
+    "05": "電機機械", "06": "電器電纜", "08": "玻璃陶瓷", "09": "造紙",
+    "10": "鋼鐵", "11": "橡膠", "12": "汽車", "14": "建材營造",
+    "15": "航運", "16": "觀光餐旅", "17": "金融保險", "18": "貿易百貨",
+    "20": "其他", "21": "化學", "22": "生技醫療", "23": "油電燃氣",
+    "24": "半導體", "25": "電腦及週邊設備", "26": "光電",
+    "27": "通信網路", "28": "電子零組件", "29": "電子通路",
+    "30": "資訊服務", "31": "其他電子", "35": "綠能環保",
+    "36": "數位雲端", "37": "運動休閒", "38": "居家生活",
+    "91": "其他",
+}
 
-def stock_day(client: TwseClient, day: str) -> dict[str, dict]:
+
+def complete_themes(client: TwseClient) -> dict[str, list[str]]:
+    """保留題材代表股，並讓其餘上市公司進入官方產業的其他族群。"""
+    themes = {name: list(codes) for name, codes in THEMES.items()}
+    curated = {code for codes in themes.values() for code in codes}
+    profiles = client.get_openapi("/opendata/t187ap03_L")
+    for profile in profiles:
+        code = str(profile.get("公司代號", "")).strip()
+        industry = str(profile.get("產業別", "")).strip()
+        if not (len(code) == 4 and code.isdigit()) or code in curated:
+            continue
+        industry_name = INDUSTRY_NAMES.get(industry, "其他")
+        fallback = "其他上市" if industry_name == "其他" else f"{industry_name}其他"
+        themes.setdefault(fallback, []).append(code)
+    return themes
+
+
+def stock_day(client: TwseClient, day: str,
+              themes: dict[str, list[str]]) -> dict[str, dict]:
     payload = client.get("/exchangeReport/MI_INDEX", {
         "date": day.replace("-", ""), "type": "ALLBUT0999",
     })
-    wanted = {code for codes in THEMES.values() for code in codes}
+    wanted = {code for codes in themes.values() for code in codes}
     result = {}
     for table in payload.get("tables", []):
         fields = table.get("fields", [])
@@ -97,13 +127,14 @@ def scrape(market_path: Path, output: Path, limit: int, delay: float) -> int:
             for row in csv.DictReader(handle):
                 cached[(row["date"], row["theme"], row["code"])] = row
     client, wanted_dates = TwseClient(delay=delay), dates(market_path, limit)
+    themes = complete_themes(client)
     for day in wanted_dates:
         cached_themes = {key[1] for key in cached if key[0] == day}
-        if set(THEMES).issubset(cached_themes):
+        if set(themes).issubset(cached_themes):
             continue
         try:
-            stocks = stock_day(client, day)
-            for theme, codes in THEMES.items():
+            stocks = stock_day(client, day, themes)
+            for theme, codes in themes.items():
                 for code in codes:
                     if code not in stocks:
                         continue
