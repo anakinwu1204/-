@@ -133,7 +133,7 @@ THEMES = {
     "居家生活": ["2908", "8464", "9934"],
     "其他綜合": ["9907", "9911", "9924", "9933"],
 }
-TAXONOMY_VERSION = "2026-07-28.4"
+TAXONOMY_VERSION = "2026-07-28.6"
 
 INDUSTRY_NAMES = {
     "01": "水泥", "02": "食品", "03": "塑膠", "04": "紡織纖維",
@@ -145,24 +145,56 @@ INDUSTRY_NAMES = {
     "27": "通信網路", "28": "電子零組件", "29": "電子通路",
     "30": "資訊服務", "31": "其他電子", "35": "綠能環保",
     "36": "數位雲端", "37": "運動休閒", "38": "居家生活",
-    "91": "其他",
+    "32": "文化創意", "33": "農業科技", "91": "其他",
 }
 
 
 def complete_themes(client: TwseClient) -> dict[str, list[str]]:
-    """保留題材代表股，並讓其餘上市公司進入官方產業的其他族群。"""
+    """保留題材代表股，其餘上市櫃公司進入官方產業的其他族群。"""
     themes = {name: list(codes) for name, codes in THEMES.items()}
     curated = {code for codes in themes.values() for code in codes}
-    profiles = client.get_openapi("/opendata/t187ap03_L")
-    for profile in profiles:
-        code = str(profile.get("公司代號", "")).strip()
-        industry = str(profile.get("產業別", "")).strip()
+    profiles = [
+        (str(item.get("公司代號", "")).strip(),
+         str(item.get("產業別", "")).strip())
+        for item in client.get_openapi("/opendata/t187ap03_L")
+    ]
+    tpex_profiles = (client.get_tpex_profiles()
+                     if hasattr(client, "get_tpex_profiles")
+                     else tpex_company_profiles(delay=client.delay))
+    profiles.extend(
+        (str(item.get("SecuritiesCompanyCode", "")).strip(),
+         str(item.get("SecuritiesIndustryCode", "")).strip())
+        for item in tpex_profiles
+    )
+    for code, industry in profiles:
         if not (len(code) == 4 and code.isdigit()) or code in curated:
             continue
         industry_name = INDUSTRY_NAMES.get(industry, "其他")
-        fallback = "其他上市" if industry_name == "其他" else f"{industry_name}其他"
+        fallback = ("其他上市櫃" if industry_name == "其他"
+                    else f"{industry_name}其他")
         themes.setdefault(fallback, []).append(code)
     return themes
+
+
+def tpex_company_profiles(delay: float = 0.0) -> list[dict]:
+    url = "https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap03_O"
+    request = Request(url, headers={"User-Agent": "twse-risk-score/1.0",
+                                    "Accept": "application/json"})
+    error = None
+    for attempt in range(3):
+        try:
+            if delay:
+                time.sleep(delay)
+            with urlopen(request, timeout=30) as response:
+                payload = json.loads(response.read().decode("utf-8-sig"))
+            if not isinstance(payload, list):
+                raise RuntimeError("上櫃公司基本資料格式非陣列")
+            return payload
+        except Exception as exc:
+            error = exc
+            if attempt < 2:
+                time.sleep(2 ** attempt)
+    raise RuntimeError(f"櫃買中心公司資料請求失敗：{url}：{error}") from error
 
 
 def stock_day(client: TwseClient, day: str,

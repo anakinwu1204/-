@@ -13,12 +13,15 @@ class FakeClient:
             {"公司代號": "12AB", "產業別": "02"},
         ]
 
+    def get_tpex_profiles(self):
+        return []
+
 
 class ThemeScraperTest(unittest.TestCase):
     def test_unmapped_stocks_are_added_to_industry_fallback(self):
         themes = complete_themes(FakeClient())
         self.assertIn("2302", themes["半導體其他"])
-        self.assertIn("9105", themes["其他上市"])
+        self.assertIn("9105", themes["其他上市櫃"])
 
     def test_curated_stock_is_not_duplicated_in_fallback(self):
         themes = complete_themes(FakeClient())
@@ -65,6 +68,18 @@ class ThemeScraperTest(unittest.TestCase):
         result = parse_tpex_stock_day(payload, {"6274", "6488"})
         self.assertEqual(result["6274"]["close"], 1355.0)
         self.assertNotIn("6488", result)
+
+    def test_all_tpex_companies_are_added_to_industry_fallback(self):
+        class Client(FakeClient):
+            def get_tpex_profiles(self):
+                return [{"SecuritiesCompanyCode": "4123",
+                         "SecuritiesIndustryCode": "22"},
+                        {"SecuritiesCompanyCode": "1299",
+                         "SecuritiesIndustryCode": "33"}]
+
+        themes = complete_themes(Client())
+        self.assertIn("4123", themes["生技醫療其他"])
+        self.assertIn("1299", themes["農業科技其他"])
 
 
 if __name__ == "__main__":
