@@ -23,6 +23,20 @@ from twse_scraper import scrape
 ROOT = Path(__file__).resolve().parent
 
 
+def market_regime(rows: list[dict[str, float | str]]) -> dict[str, float]:
+    """將相對強弱依大盤風險與短期方向折減，避免弱市抗跌被誤判為極強。"""
+    risk = calculate(rows)
+    closes = [float(row["close"]) for row in rows]
+    return_3d = (closes[-1] / closes[-4] - 1) * 100
+    ma20 = fmean(closes[-20:])
+    penalty = max(0.0, risk.total - 30) * .01
+    penalty += max(0.0, -return_3d) * .05
+    if closes[-1] < ma20:
+        penalty += .08
+    return {"risk_score": risk.total, "return_3d_pct": return_3d,
+            "factor": max(.50, min(1.0, 1.0 - penalty))}
+
+
 def env_int(name: str, default: int) -> int:
     value = os.environ.get(name)
     try:
@@ -71,6 +85,7 @@ def sector_data(csv_path: Path, market_path: Path) -> dict:
     with csv_path.open(encoding="utf-8-sig", newline="") as handle:
         rows = list(csv.DictReader(handle))
     market = load_csv(market_path)
+    regime = market_regime(market)
     market_close = {str(row["date"]): float(row["close"]) for row in market}
     by_sector: dict[str, list[dict]] = {}
     for row in rows:
@@ -95,7 +110,8 @@ def sector_data(csv_path: Path, market_path: Path) -> dict:
         rel5 = r5 - (m0 / m5 - 1) * 100
         rel20 = r20 - (m0 / m20 - 1) * 100
         # 短線輪動優先：當日20%、5日50%、20日30%，避免舊漲幅掩蓋轉弱。
-        strength = max(0, min(100, 50 + rel1 * 2 + rel5 * 5 + rel20))
+        relative_strength = max(0, min(100, 50 + rel1 * 2 + rel5 * 5 + rel20))
+        strength = relative_strength * regime["factor"]
         if rel5 > 0 >= rel20:
             state = "轉強"
         elif rel5 < 0 <= rel20:
@@ -114,16 +130,19 @@ def sector_data(csv_path: Path, market_path: Path) -> dict:
             "relative_20d_pct": round(rel20, 2),
             "relative_daily_pct": round(rel1, 2),
             "strength": round(strength, 1), "state": state,
+            "relative_strength": round(relative_strength, 1),
         })
     results.sort(key=lambda item: item["strength"], reverse=True)
     return {"date": results[0]["date"] if results else None,
-            "sectors": results, "count": len(results)}
+            "sectors": results, "count": len(results),
+            "market": {key: round(value, 2) for key, value in regime.items()}}
 
 
 def theme_data(csv_path: Path, market_path: Path) -> dict:
     with csv_path.open(encoding="utf-8-sig", newline="") as handle:
         rows = list(csv.DictReader(handle))
     market = load_csv(market_path)
+    regime = market_regime(market)
     market_close = {str(row["date"]): float(row["close"]) for row in market}
     grouped: dict[str, dict[str, list[dict]]] = {}
     for row in rows:
@@ -155,7 +174,8 @@ def theme_data(csv_path: Path, market_path: Path) -> dict:
         rel1 = r1 - (m0 / m1 - 1) * 100
         rel5 = r5 - (m0 / m5 - 1) * 100
         rel20 = r20 - (m0 / m20 - 1) * 100
-        strength = max(0, min(100, 50 + rel1 * 2 + rel5 * 5 + rel20))
+        relative_strength = max(0, min(100, 50 + rel1 * 2 + rel5 * 5 + rel20))
+        strength = relative_strength * regime["factor"]
         state = ("轉強" if rel5 > 0 >= rel20 else
                  "轉弱" if rel5 < 0 <= rel20 else
                  "強勢" if strength >= 60 else "弱勢" if strength < 40 else "中性")
@@ -166,12 +186,14 @@ def theme_data(csv_path: Path, market_path: Path) -> dict:
             "relative_5d_pct": round(rel5, 2),
             "relative_20d_pct": round(rel20, 2),
             "strength": round(strength, 1), "state": state,
+            "relative_strength": round(relative_strength, 1),
             "breadth_pct": round(up / len(names) * 100, 1),
             "members": names,
         })
     results.sort(key=lambda item: item["strength"], reverse=True)
     return {"date": results[0]["date"] if results else None,
-            "sectors": results, "count": len(results)}
+            "sectors": results, "count": len(results),
+            "market": {key: round(value, 2) for key, value in regime.items()}}
 
 
 class Handler(SimpleHTTPRequestHandler):
