@@ -70,6 +70,19 @@ class ThemeScraperTest(unittest.TestCase):
         self.assertEqual(result["6274"]["close"], 1355.0)
         self.assertNotIn("6488", result)
 
+    def test_cross_industry_technology_themes_are_curated(self):
+        themes = complete_themes(FakeClient())
+        self.assertIn("3163", themes["光通訊"])
+        self.assertIn("3221", themes["石英元件"])
+        self.assertIn("3260", themes["記憶體"])
+        self.assertIn("5439", themes["PCB"])
+        self.assertIn("3357", themes["被動元件"])
+        self.assertIn("3689", themes["連接器線材"])
+        self.assertNotIn("3130", themes["電子檢測"])
+        self.assertIn("5274", themes["IC設計"])
+        self.assertIn("6147", themes["封裝測試"])
+        self.assertIn("3105", themes["化合物半導體"])
+
     def test_all_tpex_companies_are_added_to_industry_fallback(self):
         class Client(FakeClient):
             def get_tpex_profiles(self):
