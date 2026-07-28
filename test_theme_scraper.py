@@ -1,6 +1,6 @@
 import unittest
 
-from theme_scraper import THEMES, complete_themes
+from theme_scraper import THEMES, complete_themes, parse_tpex_stock_day
 
 
 class FakeClient:
@@ -49,6 +49,22 @@ class ThemeScraperTest(unittest.TestCase):
         self.assertIn("9958", themes["鋼構工程"])
         self.assertIn("2607", themes["物流港口"])
         self.assertIn("1436", themes["建設開發"])
+
+    def test_glass_quartz_and_ccl_subthemes(self):
+        themes = complete_themes(FakeClient())
+        self.assertIn("2484", themes["石英元件"])
+        self.assertIn("3016", themes["矽晶圓"])
+        self.assertIn("1802", themes["玻纖布"])
+        self.assertIn("2409", themes["TGV玻璃基板"])
+        self.assertIn("6274", themes["CCL銅箔基板"])
+
+    def test_tpex_daily_price_parser(self):
+        payload = {"tables": [{"fields": ["代號", "名稱", "收盤 "],
+                               "data": [["6274", "台燿", "1,355.00"],
+                                        ["6488", "環球晶", "---"]]}]}
+        result = parse_tpex_stock_day(payload, {"6274", "6488"})
+        self.assertEqual(result["6274"]["close"], 1355.0)
+        self.assertNotIn("6488", result)
 
 
 if __name__ == "__main__":

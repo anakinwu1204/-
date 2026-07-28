@@ -5,7 +5,11 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
+import time
 from pathlib import Path
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 from twse_scraper import NoDataError, TwseClient, number
 
@@ -55,13 +59,16 @@ THEMES = {
     "散熱": ["2421", "3017", "3324", "3653", "6230"],
     "記憶體": ["2337", "2344", "2408", "4967", "8271"],
     "CCL銅箔基板": ["2383", "6213", "6274"],
+    "玻纖布": ["1802", "1815", "5340"],
+    "TGV玻璃基板": ["1802", "2409", "2467", "3019", "3167", "3362",
+                    "3455", "3481", "3563", "6207", "6438"],
     "AI伺服器": ["2308", "2317", "2382", "3017", "3231", "3706", "6414",
                  "6669", "8210"],
     "半導體設備": ["2467", "3583", "6196"],
     "晶圓代工": ["2303", "2330", "2342", "6770"],
     "封裝測試": ["2329", "2441", "2449", "3711", "6239", "6257", "6271",
                  "6451", "6525", "8110", "8131", "8150"],
-    "矽晶圓材料": ["3016", "3532", "8028"],
+    "矽晶圓": ["3016", "3532", "6182", "6488", "8028"],
     "功率半導體": ["2340", "2434", "2481", "5285", "6573", "8261"],
     "IC設計": ["2379", "2454", "3034", "3443", "3661", "5269"],
     "光通訊": ["3450", "4977", "4979", "6442"],
@@ -71,6 +78,7 @@ THEMES = {
     "光學鏡頭": ["3008", "3406", "3504"],
     "被動元件": ["2327", "2375", "2428", "2472", "2478", "2492", "3026",
                  "6173", "6449"],
+    "石英元件": ["2484", "3042", "6792", "8182"],
     "連接器線材": ["2328", "2392", "3003", "3023", "3533", "3665", "6197",
                    "6279"],
     "電源供應": ["2308", "3015", "6282", "6409", "6412"],
@@ -125,6 +133,7 @@ THEMES = {
     "居家生活": ["2908", "8464", "9934"],
     "其他綜合": ["9907", "9911", "9924", "9933"],
 }
+TAXONOMY_VERSION = "2026-07-28.4"
 
 INDUSTRY_NAMES = {
     "01": "水泥", "02": "食品", "03": "塑膠", "04": "紡織纖維",
@@ -175,7 +184,54 @@ def stock_day(client: TwseClient, day: str,
                 result[code] = {"name": str(row[name_i]).strip(),
                                 "close": number(row[close_i])}
         break
+    missing = wanted - set(result)
+    if missing:
+        result.update(tpex_stock_day(day, missing, client.delay))
     return result
+
+
+def parse_tpex_stock_day(payload: dict, wanted: set[str]) -> dict[str, dict]:
+    result = {}
+    for table in payload.get("tables", []):
+        fields = [str(field).replace("<br>", "").strip()
+                  for field in table.get("fields", [])]
+        if not {"代號", "名稱", "收盤"}.issubset(fields):
+            continue
+        code_i, name_i, close_i = (fields.index("代號"), fields.index("名稱"),
+                                   fields.index("收盤"))
+        for row in table.get("data", []):
+            code = str(row[code_i]).strip()
+            if code not in wanted:
+                continue
+            try:
+                close = number(row[close_i])
+            except ValueError:
+                continue
+            if close > 0:
+                result[code] = {"name": str(row[name_i]).strip(), "close": close}
+        break
+    return result
+
+
+def tpex_stock_day(day: str, wanted: set[str], delay: float) -> dict[str, dict]:
+    query = urlencode({"date": day.replace("-", "/"), "type": "AL",
+                       "response": "json"})
+    url = f"https://www.tpex.org.tw/www/zh-tw/afterTrading/otc?{query}"
+    request = Request(url, headers={"User-Agent": "twse-risk-score/1.0",
+                                    "Accept": "application/json"})
+    error = None
+    for attempt in range(3):
+        try:
+            if delay:
+                time.sleep(delay)
+            with urlopen(request, timeout=30) as response:
+                payload = json.loads(response.read().decode("utf-8-sig"))
+            return parse_tpex_stock_day(payload, wanted)
+        except Exception as exc:
+            error = exc
+            if attempt < 2:
+                time.sleep(2 ** attempt)
+    raise RuntimeError(f"櫃買中心行情請求失敗：{url}：{error}") from error
 
 
 def dates(path: Path, limit: int) -> list[str]:
@@ -193,7 +249,10 @@ def scrape(market_path: Path, output: Path, limit: int, delay: float) -> int:
     themes = complete_themes(client)
     for day in wanted_dates:
         cached_themes = {key[1] for key in cached if key[0] == day}
-        if set(themes).issubset(cached_themes):
+        current_taxonomy = any(
+            key[0] == day and row.get("taxonomy_version") == TAXONOMY_VERSION
+            for key, row in cached.items())
+        if current_taxonomy and set(themes).issubset(cached_themes):
             continue
         try:
             stocks = stock_day(client, day, themes)
@@ -203,7 +262,8 @@ def scrape(market_path: Path, output: Path, limit: int, delay: float) -> int:
                         continue
                     cached[(day, theme, code)] = {
                         "date": day, "theme": theme, "code": code,
-                        "name": stocks[code]["name"], "close": stocks[code]["close"]}
+                        "name": stocks[code]["name"], "close": stocks[code]["close"],
+                        "taxonomy_version": TAXONOMY_VERSION}
             print(f"已取得題材族群：{day}")
         except NoDataError:
             print(f"略過尚未發布個股行情：{day}")
@@ -215,7 +275,7 @@ def scrape(market_path: Path, output: Path, limit: int, delay: float) -> int:
     temporary = output.with_suffix(output.suffix + ".tmp")
     with temporary.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=[
-            "date", "theme", "code", "name", "close"])
+            "date", "theme", "code", "name", "close", "taxonomy_version"])
         writer.writeheader()
         writer.writerows(rows)
     temporary.replace(output)
