@@ -106,7 +106,8 @@ def technical_components(close: float, ma20: float, ma60: float, ma120: float,
 
 def technical_score(close: float, ma20: float, ma60: float, ma120: float,
                     ma60_slope_20d: float, return_20d: float,
-                    drawdown_60d: float, recent_distances: list[float]) -> float:
+                    drawdown_60d: float, recent_distances: list[float],
+                    return_3d: float = 0.0, decline_streak: int = 0) -> float:
     parts = technical_components(close, ma20, ma60, ma120, ma60_slope_20d,
                                  return_20d, drawdown_60d)
     score = (parts["position"] * .35 + parts["trend"] * .30 +
@@ -118,12 +119,19 @@ def technical_score(close: float, ma20: float, ma60: float, ma120: float,
             distance = pct_change(close, ma60)
             z = (distance - fmean(recent_distances)) / sigma
             score -= max(0.0, abs(z) - 2.0) * 5.0
+    # 月線下方的短期回落不能因20日比較基期移動而被判定為改善。
+    if close < ma20 and return_3d < -1:
+        score -= min(8.0, abs(return_3d) * 1.5)
+    if close < ma20 and decline_streak >= 2:
+        score -= min(6.0, (decline_streak - 1) * 2.0)
     return clamp(score)
 
 
 def volume_components(volume_ratio: float, daily_return: float, margin_3d: float,
                       previous_day_ratio: float = 1.0,
-                      volume_cv20: float = 0.2) -> dict[str, float]:
+                      volume_cv20: float = 0.2,
+                      price_below_ma20: bool = False,
+                      return_3d: float = 0.0) -> dict[str, float]:
     # 量能常態：0.8~1.2 倍最佳，極度量縮或爆量皆降低安全分。
     if volume_ratio < .8:
         normality = lerp(volume_ratio, .4, .8, 20, 70)
@@ -155,6 +163,9 @@ def volume_components(volume_ratio: float, daily_return: float, margin_3d: float
         confirmation = 82 if .7 <= volume_ratio <= 1.3 else 52
     else:
         confirmation = 68 if .8 <= volume_ratio <= 1.3 else 55
+    # 指數位於月線下且近3日回落時，量比低於0.8代表承接不足，不視為平穩量縮。
+    if price_below_ma20 and return_3d < -1 and volume_ratio < .8:
+        confirmation = min(confirmation, 42)
 
     if previous_day_ratio < .6:
         day_comparison = lerp(previous_day_ratio, .3, .6, 25, 55)
@@ -177,9 +188,12 @@ def volume_components(volume_ratio: float, daily_return: float, margin_3d: float
 
 def volume_score(volume_ratio: float, daily_return: float, margin_3d: float,
                  previous_day_ratio: float = 1.0,
-                 volume_cv20: float = .2) -> float:
+                 volume_cv20: float = .2,
+                 price_below_ma20: bool = False,
+                 return_3d: float = 0.0) -> float:
     parts = volume_components(volume_ratio, daily_return, margin_3d,
-                              previous_day_ratio, volume_cv20)
+                              previous_day_ratio, volume_cv20,
+                              price_below_ma20, return_3d)
     return clamp(parts["normality"] * .40 + parts["confirmation"] * .35 +
                  parts["day_comparison"] * .10 + parts["stability"] * .15)
 
@@ -260,7 +274,10 @@ def institutional_score(foreign_ratio: float, trust_ratio: float,
                         dealer_ratio: float, total_ratio: float,
                         total_streak: int, volume_ratio: float,
                         strength_20d_z: float = 0.0,
-                        strength_5d_z: float = 0.0) -> float:
+                        strength_5d_z: float = 0.0,
+                        previous_foreign_ratio: float = 0.0,
+                        previous_trust_ratio: float = 0.0,
+                        previous_dealer_ratio: float = 0.0) -> float:
     # 外資方向權重最高；各比率皆為買賣超／成交值（%）。
     directional = 0.60 * foreign_ratio + 0.25 * trust_ratio + 0.15 * dealer_ratio
     score = lerp(directional, -5, 5, 35, 90)
@@ -269,6 +286,19 @@ def institutional_score(foreign_ratio: float, trust_ratio: float,
     # 短線 5 日占 40%、中期 20 日占 60%，合計最多影響 ±18 分。
     combined_strength = strength_5d_z * 0.40 + strength_20d_z * 0.60
     score += max(-3.0, min(3.0, combined_strength)) * 6.0
+    # 籌碼方向翻轉：賣轉買提高安全分、買轉賣降低安全分。
+    # 以外資／投信／自營商 60%／25%／15% 加權；占成交值不足0.05%視為雜訊。
+    reversal_adjustment = 0.0
+    for current, previous, weight in (
+        (foreign_ratio, previous_foreign_ratio, .60),
+        (trust_ratio, previous_trust_ratio, .25),
+        (dealer_ratio, previous_dealer_ratio, .15),
+    ):
+        if abs(current) < .05 or abs(previous) < .05 or current * previous >= 0:
+            continue
+        strength = lerp(abs(current), .05, 2.0, .25, 1.0)
+        reversal_adjustment += (1 if current > 0 else -1) * 12 * weight * strength
+    score += reversal_adjustment
     if total_ratio > 5 and total_streak >= 3:
         score = max(score, 88)
     elif total_ratio < -5 and total_streak <= -3:
@@ -306,6 +336,12 @@ def calculate(rows: list[dict[str, float | str]]) -> Score:
     volume_ratio = volumes[i] / avg_volume20 if avg_volume20 else 0
     volume_cv20 = pstdev(volumes[-20:]) / avg_volume20 if avg_volume20 else 0
     daily_return = pct_change(close, closes[i - 1])
+    return_3d = pct_change(close, closes[i - 3])
+    decline_streak = 0
+    for end in range(i, 0, -1):
+        if closes[end] >= closes[end - 1]:
+            break
+        decline_streak += 1
     margin_3d = pct_change(margins[i], margins[i - 3])
     margin_5d = pct_change(margins[i], margins[i - 5])
     margin_20d = pct_change(margins[i], margins[i - 20])
@@ -344,11 +380,19 @@ def calculate(rows: list[dict[str, float | str]]) -> Score:
     technical_parts = technical_components(close, ma20, ma60, ma120,
                                            ma60_slope_20d, return_20d, drawdown_60d)
     volume_parts = volume_components(volume_ratio, daily_return, margin_3d,
-                                     volume_ratio_previous_day, volume_cv20)
+                                     volume_ratio_previous_day, volume_cv20,
+                                     close < ma20, return_3d)
 
     turnover = float(row["turnover_value"])
     ratios = {
         key: (float(row[key]) / turnover * 100 if turnover else 0.0)
+        for key in ("foreign_net", "investment_trust_net", "dealer_net")
+    }
+    previous_row = rows[i - 1]
+    previous_turnover = float(previous_row["turnover_value"])
+    previous_ratios = {
+        key: (float(previous_row[key]) / previous_turnover * 100
+              if previous_turnover else 0.0)
         for key in ("foreign_net", "investment_trust_net", "dealer_net")
     }
     total_ratio = sum(ratios.values())
@@ -381,14 +425,20 @@ def calculate(rows: list[dict[str, float | str]]) -> Score:
     # 各因子函式沿用既有「安全分」規則，統一在輸出邊界反轉為風險分。
     safety_scores = {
         "technical": technical_score(close, ma20, ma60, ma120, ma60_slope_20d,
-                                     return_20d, drawdown_60d, distances),
+                                     return_20d, drawdown_60d, distances,
+                                     return_3d, decline_streak),
         "volume": volume_score(volume_ratio, daily_return, margin_3d,
-                               volume_ratio_previous_day, volume_cv20),
+                               volume_ratio_previous_day, volume_cv20,
+                               close < ma20, return_3d),
         "margin": margin_score(margin_3d, margin_5d, margin_20d, daily_return,
                                distance_ma60, estimated_margin_maintenance, return_20d,
                                margin_change_streak, margin_vs_ma20,
                                margin_excess_growth_20d, current_structure_score),
-        "institutional": institutional_score(ratios["foreign_net"], ratios["investment_trust_net"], ratios["dealer_net"], total_ratio, streak, volume_ratio, institutional_strength_20d_z, institutional_strength_5d_z),
+        "institutional": institutional_score(
+            ratios["foreign_net"], ratios["investment_trust_net"], ratios["dealer_net"],
+            total_ratio, streak, volume_ratio, institutional_strength_20d_z,
+            institutional_strength_5d_z, previous_ratios["foreign_net"],
+            previous_ratios["investment_trust_net"], previous_ratios["dealer_net"]),
     }
     scores = {key: to_risk_score(value) for key, value in safety_scores.items()}
     total = fmean(scores.values())
@@ -403,6 +453,8 @@ def calculate(rows: list[dict[str, float | str]]) -> Score:
                "volume_day_comparison_score": to_risk_score(volume_parts["day_comparison"]),
                "volume_stability_score": to_risk_score(volume_parts["stability"]),
                "ma60_slope_20d_pct": ma60_slope_20d,
+               "return_3d_pct": return_3d,
+               "decline_streak": float(decline_streak),
                "return_20d_pct": return_20d, "drawdown_60d_pct": drawdown_60d,
                "technical_position_score": to_risk_score(technical_parts["position"]),
                "technical_trend_score": to_risk_score(technical_parts["trend"]),
@@ -421,6 +473,25 @@ def calculate(rows: list[dict[str, float | str]]) -> Score:
                                             if current_structure_score > 0 else 0.0),
                **structure_values,
                "institutional_net_ratio_pct": total_ratio,
+               "foreign_net_ratio_pct": ratios["foreign_net"],
+               "investment_trust_net_ratio_pct": ratios["investment_trust_net"],
+               "dealer_net_ratio_pct": ratios["dealer_net"],
+               "previous_foreign_net_ratio_pct": previous_ratios["foreign_net"],
+               "previous_investment_trust_net_ratio_pct": previous_ratios["investment_trust_net"],
+               "previous_dealer_net_ratio_pct": previous_ratios["dealer_net"],
+               "foreign_reversal": (1.0 if ratios["foreign_net"] > .05
+                                    and previous_ratios["foreign_net"] < -.05 else
+                                    -1.0 if ratios["foreign_net"] < -.05
+                                    and previous_ratios["foreign_net"] > .05 else 0.0),
+               "investment_trust_reversal": (
+                   1.0 if ratios["investment_trust_net"] > .05
+                   and previous_ratios["investment_trust_net"] < -.05 else
+                   -1.0 if ratios["investment_trust_net"] < -.05
+                   and previous_ratios["investment_trust_net"] > .05 else 0.0),
+               "dealer_reversal": (1.0 if ratios["dealer_net"] > .05
+                                   and previous_ratios["dealer_net"] < -.05 else
+                                   -1.0 if ratios["dealer_net"] < -.05
+                                   and previous_ratios["dealer_net"] > .05 else 0.0),
                "institutional_5d_avg_ratio_pct": prior_5d_mean,
                "institutional_20d_avg_ratio_pct": prior_20d_mean,
                "institutional_strength_5d_z": institutional_strength_5d_z,

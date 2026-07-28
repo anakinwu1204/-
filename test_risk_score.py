@@ -1,6 +1,6 @@
 import unittest
 
-from risk_score import calculate, classify, institutional_score, margin_maintenance_score, margin_score, margin_structure_score, technical_components, to_risk_score, volume_components, volume_score
+from risk_score import calculate, classify, institutional_score, margin_maintenance_score, margin_score, margin_structure_score, technical_components, technical_score, to_risk_score, volume_components, volume_score
 
 
 class RiskScoreTest(unittest.TestCase):
@@ -44,10 +44,21 @@ class RiskScoreTest(unittest.TestCase):
         selloff = volume_score(1.6, -3, 0, 1.6, .5)
         self.assertGreater(normal, selloff)
 
+    def test_weak_price_low_volume_is_not_treated_as_safe(self):
+        neutral = volume_score(.75, 0, 0, .95, .2)
+        weak = volume_score(.75, 0, 0, .95, .2, True, -2.5)
+        self.assertGreater(neutral, weak)
+
     def test_bullish_technical_structure_is_safer(self):
         bullish = technical_components(110, 108, 105, 100, 3, 5, -2)
         bearish = technical_components(85, 90, 95, 100, -3, -12, -18)
         self.assertGreater(sum(bullish.values()), sum(bearish.values()))
+
+    def test_short_term_decline_penalizes_technical_safety(self):
+        distances = [0.0] * 20
+        stable = technical_score(98, 100, 99, 95, 1, -2, -5, distances)
+        falling = technical_score(98, 100, 99, 95, 1, -2, -5, distances, -3, 3)
+        self.assertGreater(stable, falling)
 
     def test_three_day_institutional_buying_is_safer(self):
         buy = institutional_score(6, 1, 0, 7, 3, 1)
@@ -58,6 +69,20 @@ class RiskScoreTest(unittest.TestCase):
         strong = institutional_score(1, 0, 0, 1, 1, 1, 2, 2)
         weak = institutional_score(1, 0, 0, 1, 1, 1, -2, -2)
         self.assertGreater(strong, weak)
+
+    def test_each_institutional_reversal_affects_score(self):
+        sell_to_buy = institutional_score(
+            1, .5, .3, 1.8, 1, 1, 0, 0, -1, -.5, -.3)
+        buy_to_sell = institutional_score(
+            -1, -.5, -.3, -1.8, -1, 1, 0, 0, 1, .5, .3)
+        self.assertGreater(sell_to_buy, buy_to_sell)
+
+    def test_foreign_reversal_has_more_weight_than_dealer(self):
+        foreign_turns_buy = institutional_score(
+            1, 0, 0, 1, 1, 1, 0, 0, -1, 0, 0)
+        dealer_turns_buy = institutional_score(
+            0, 0, 1, 1, 1, 1, 0, 0, 0, 0, -1)
+        self.assertGreater(foreign_turns_buy, dealer_turns_buy)
 
     def test_end_to_end_score(self):
         rows = []
