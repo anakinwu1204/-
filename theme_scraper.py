@@ -43,6 +43,8 @@ THEMES = {
     "資安": ["6690", "6811"],
     "系統整合": ["2427", "2480", "3029", "6214"],
     "電子檢測": ["2360", "3130", "3563"],
+    "設備工程": ["2404", "2423", "2467", "3030", "3583", "4585", "6139",
+                 "6192", "6196", "6215", "6438", "6658", "6691", "7631"],
     "重電": ["1503", "1513", "1519", "1609", "1618"],
     "機器人": ["1590", "2049", "2308", "2359", "2464", "6166"],
     "貨櫃航運": ["2603", "2609", "2615"],
@@ -144,7 +146,11 @@ def scrape(market_path: Path, output: Path, limit: int, delay: float) -> int:
             print(f"已取得題材族群：{day}")
         except NoDataError:
             print(f"略過尚未發布個股行情：{day}")
-    rows = [cached[key] for key in sorted(cached) if key[0] in wanted_dates]
+    # 只保留現行分類的成分，避免股票改組後仍殘留在舊族群。
+    valid_memberships = {(theme, code) for theme, codes in themes.items()
+                         for code in codes}
+    rows = [cached[key] for key in sorted(cached)
+            if key[0] in wanted_dates and (key[1], key[2]) in valid_memberships]
     temporary = output.with_suffix(output.suffix + ".tmp")
     with temporary.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=[

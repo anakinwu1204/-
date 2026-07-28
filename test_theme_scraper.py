@@ -28,6 +28,11 @@ class ThemeScraperTest(unittest.TestCase):
         themes = complete_themes(FakeClient())
         self.assertNotIn("12AB", {code for codes in themes.values() for code in codes})
 
+    def test_equipment_engineering_is_a_separate_theme(self):
+        themes = complete_themes(FakeClient())
+        self.assertIn("2404", themes["設備工程"])
+        self.assertIn("6196", themes["設備工程"])
+
 
 if __name__ == "__main__":
     unittest.main()
