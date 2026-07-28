@@ -1,6 +1,6 @@
 const $=s=>document.querySelector(s),fmt=(n,d=2)=>Number(n).toLocaleString('zh-TW',{maximumFractionDigits:d}),signed=n=>`${n>0?'+':''}${fmt(n)}%`;
 const color=s=>s>=60?'#3ee0c2':s<40?'#ff647c':'#ffc857';
-let datasets={},active='themes';
+let datasets={},active='sectors';
 function render(data){
  const sectors=data.sectors,top=sectors.slice(0,3),weak=sectors.slice(-3).reverse();
  $('#asof').textContent=`資料截至 ${data.date} · ${data.count} 個${active==='themes'?'細分族群':'產業'}`;
