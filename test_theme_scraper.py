@@ -84,7 +84,9 @@ class ThemeScraperTest(unittest.TestCase):
         self.assertIn("3105", themes["化合物半導體"])
         self.assertIn("3034", themes["顯示驅動IC"])
         self.assertIn("6415", themes["電源管理IC"])
-        self.assertIn("2454", themes["網通射頻IC"])
+        self.assertIn("2454", themes["ASIC與矽智財"])
+        self.assertIn("2454", themes["手機與邊緣SoC"])
+        self.assertNotIn("2454", themes["網通射頻IC"])
 
     def test_all_tpex_companies_are_added_to_industry_fallback(self):
         class Client(FakeClient):
